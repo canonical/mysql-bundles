@@ -1,0 +1,29 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: Update bundle
+
+on:
+  schedule:
+    - cron: '53 0 * * *'  # Daily at 00:53 UTC
+
+jobs:
+  update-bundle:
+    name: Update bundle | ${{ matrix.path }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: kubernetes
+            name: mysql-k8s-bundle
+          - path: machines
+            name: mysql-bundle
+    uses: canonical/data-platform-workflows/.github/workflows/_update_bundle.yaml@v49.0.1
+    with:
+      path-to-bundle-file: ${{ matrix.path }}/releases/latest/${{ matrix.name }}.yaml
+      reviewers: canonical/data-mysql
+    secrets:
+      token: ${{ secrets.PAT }}
+    permissions:
+      actions: read         # Needed for GitHub API call to get workflow version
+      contents: write       # Needed to push branch
+      pull-requests: write  # Needed to create PR

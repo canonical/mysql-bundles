@@ -1,0 +1,9 @@
+*.charm
+*.tox
+*__pycache__
+*.pytest_cache
+*.terraform
+*.terraform.lock.hcl
+
+build/
+venv/

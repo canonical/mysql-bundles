@@ -1,0 +1,55 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: Tests
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.github/renovate.json5'
+
+jobs:
+  lint:
+    name: Lint | ${{ matrix.path }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - kubernetes
+          - machines
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install terraform
+        run: |
+          sudo snap install terraform --classic
+      - name: Install tox & poetry
+        run: |
+          pipx install tox
+          pipx install poetry
+      - name: Run linters
+        working-directory: ${{ matrix.path }}
+        run: |
+          tox run -e lint
+          tox run -e lint-terraform
+
+  integration-test:
+    name: Integration tests
+    needs:
+      - lint
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - kubernetes
+          - machines
+    uses: ./.github/workflows/integration_test.yaml
+    with:
+      path-to-charm-directory: ${{ matrix.path }}
+    secrets: inherit
