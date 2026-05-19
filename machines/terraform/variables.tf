@@ -25,8 +25,8 @@ variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({
     app_name    = optional(string, "mysql")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "8.0/stable")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "8.4/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
@@ -41,8 +41,8 @@ variable "mysql_router" {
   description = "Defines the MySQL Router application configuration"
   type = object({
     app_name    = optional(string, "mysql-router")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "dpe/candidate")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "8.4/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "")
     resources   = optional(map(string), {})
@@ -78,7 +78,7 @@ variable "observability" {
   description = "Defines the observability application configuration"
   type = object({
     app_name    = optional(string, "grafana-agent")
-    base        = optional(string, "ubuntu@22.04")
+    base        = optional(string, "ubuntu@24.04")
     channel     = optional(string, "1/stable")
     config      = optional(map(string), {})
     constraints = optional(string, "")
@@ -99,8 +99,8 @@ variable "s3_integrator" {
   description = "Defines the S3 integrator application configuration"
   type = object({
     app_name    = optional(string, "s3-integrator")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "1/edge")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "2/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})

@@ -1,8 +1,8 @@
 # MySQL bundles
-[![Charmhub](https://charmhub.io/mysql-bundle/badge.svg?channel=8.0/edge)](https://charmhub.io/mysql-bundle)
-[![Charmhub](https://charmhub.io/mysql-k8s-bundle/badge.svg?channel=8.0/edge)](https://charmhub.io/mysql-k8s-bundle)
-[![Release](https://github.com/canonical/mysql-bundles/actions/workflows/release.yaml/badge.svg?branch=8.0/edge)](https://github.com/canonical/mysql-bundles/actions/workflows/release.yaml)
-[![Tests](https://github.com/canonical/mysql-bundles/actions/workflows/ci.yaml/badge.svg?branch=8.0/edge)](https://github.com/canonical/mysql-bundles/actions/workflows/ci.yaml)
+[![Charmhub](https://charmhub.io/mysql-bundle/badge.svg?channel=8.4/edge)](https://charmhub.io/mysql-bundle)
+[![Charmhub](https://charmhub.io/mysql-k8s-bundle/badge.svg?channel=8.4/edge)](https://charmhub.io/mysql-k8s-bundle)
+[![Release](https://github.com/canonical/mysql-bundles/actions/workflows/release.yaml/badge.svg?branch=8.4/edge)](https://github.com/canonical/mysql-bundles/actions/workflows/release.yaml)
+[![Tests](https://github.com/canonical/mysql-bundles/actions/workflows/ci.yaml/badge.svg?branch=8.4/edge)](https://github.com/canonical/mysql-bundles/actions/workflows/ci.yaml)
 
 Welcome to the Canonical Distribution of MySQL Server + MySQL Router.
 
@@ -22,14 +22,14 @@ Deploying this charm depends on the substrate of choice
 ### Kubernetes
 ```shell
 juju add-model mysql
-juju deploy mysql-k8s-bundle --channel 8.0/edge
+juju deploy mysql-k8s-bundle --channel 8.4/edge
 juju status --watch 1s
 ```
 
 ### Bare metal
 ```shell
 juju add-model mysql
-juju deploy mysql-bundle --channel 8.0/edge
+juju deploy mysql-bundle --channel 8.4/edge
 juju status --watch 1s
 ```
 
