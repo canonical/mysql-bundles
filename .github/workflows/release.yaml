@@ -1,0 +1,65 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: Release to Charmhub
+
+on:
+  push:
+    branches:
+      - '8.0/edge'
+    paths-ignore:
+      - '**.md'
+      - '.github/renovate.json5'
+
+jobs:
+  integration-test:
+    name: Integration tests
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - kubernetes
+          - machines
+    uses: ./.github/workflows/integration_test.yaml
+    with:
+      path-to-charm-directory: ${{ matrix.path }}
+    secrets: inherit
+
+  publish-bundle:
+    name: Publish bundle | ${{ matrix.path }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - integration-test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - path: kubernetes
+            name: mysql-k8s-bundle
+          - path: machines
+            name: mysql-bundle
+    env:
+      CHARMCRAFT_AUTH: ${{ secrets.CHARMHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: |
+          sudo snap install charmcraft --classic --channel=3.x/stable
+      - name: Pack and publish bundle
+        working-directory: ${{ matrix.path }}
+        run: |
+          set -ex
+          # Use a temporary directory to support publishing any of the bundles in this root dir
+          BUILD_DIR=.bundle_build
+          mkdir $BUILD_DIR
+          cp ./releases/latest/${{ matrix.name }}.yaml $BUILD_DIR/bundle.yaml
+          cp ./charmcraft.yaml $BUILD_DIR
+          cp ../README.md $BUILD_DIR
+          cd $BUILD_DIR
+          charmcraft pack --destructive-mode
+          charmcraft upload ./*.zip
+          REVISION=$(charmcraft revisions ${{ matrix.name }} 2>&1 | awk 'NR==2 {print $1}')
+          charmcraft release ${{ matrix.name }} --revision "$REVISION" --channel=8.0/edge
