@@ -7,7 +7,7 @@ locals {
 }
 
 module "mysql_server" {
-  source      = "git::https://github.com/canonical/mysql-operators//kubernetes/terraform?ref=8.0/edge"
+  source      = "git::https://github.com/canonical/mysql-operators//kubernetes/terraform?ref=8.4/edge"
   model       = var.model
   app_name    = var.mysql_server.app_name
   base        = var.mysql_server.base
@@ -19,7 +19,7 @@ module "mysql_server" {
 }
 
 module "mysql_router" {
-  source      = "git::https://github.com/canonical/mysql-router-operators//kubernetes/terraform?ref=dpe"
+  source      = "git::https://github.com/canonical/mysql-router-operators//kubernetes/terraform?ref=8.4/edge"
   model       = var.model
   app_name    = var.mysql_router.app_name
   base        = var.mysql_router.base

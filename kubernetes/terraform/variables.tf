@@ -28,8 +28,8 @@ variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({
     app_name    = optional(string, "mysql-k8s")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "8.0/stable")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "8.4/edge")
     config      = optional(map(string), { "juju-external-hostname" = "mysql.local" })
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
@@ -44,8 +44,8 @@ variable "mysql_router" {
   description = "Defines the MySQL Router application configuration"
   type = object({
     app_name    = optional(string, "mysql-router-k8s")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "8.0/stable")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "8.4/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "")
     resources   = optional(map(string), {})
@@ -102,8 +102,8 @@ variable "s3_integrator" {
   description = "Defines the S3 integrator application configuration"
   type = object({
     app_name    = optional(string, "s3-integrator")
-    base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "1/edge")
+    base        = optional(string, "ubuntu@24.04")
+    channel     = optional(string, "2/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
