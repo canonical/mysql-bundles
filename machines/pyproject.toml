@@ -25,7 +25,6 @@ pytest = "^8.3.3"
 pytest-operator = "^0.38.0"
 # renovate caret doesn't work: https://github.com/renovatebot/renovate/issues/26940
 juju = "^3.6.0.0"
-mysql-connector-python = "~9.1.0"
 allure-pytest = "^2.13.5"
 allure-pytest-default-results = "^0.1.4"
 
