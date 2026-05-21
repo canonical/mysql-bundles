@@ -37,7 +37,7 @@ resource "juju_integration" "mysql_server_certificates" {
 
   application {
     name     = module.mysql_server.app_name
-    endpoint = module.mysql_server.requires.certificates
+    endpoint = module.mysql_server.requires.client_certificates
   }
   application {
     name     = juju_application.certificates[0].name

@@ -45,7 +45,10 @@ resource "juju_application" "s3_integrator" {
 
   model_uuid  = var.model
   name        = var.s3_integrator.app_name
-  config      = var.s3_integrator.config
   constraints = var.s3_integrator.constraints
   units       = var.s3_integrator.units
+
+  config = merge(
+    var.s3_integrator.config, { "credentials" = "secret:${juju_secret.s3_integrator_credentials.secret_id}" },
+  )
 }

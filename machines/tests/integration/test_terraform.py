@@ -4,7 +4,9 @@
 
 """Contains integration tests for the terraform module."""
 
+import json
 import logging
+import os
 import subprocess
 
 import pytest
@@ -19,10 +21,9 @@ unknown_apps = [
 ]
 active_apps = [
     "mysql",
-]
-blocked_apps = [
     "s3-integrator",
 ]
+blocked_apps = []
 
 TIMEOUT = 20 * 60
 SHORT_TIMEOUT = 5 * 60
@@ -79,13 +80,26 @@ async def test_terraform(ops_test: OpsTest) -> None:
         input=model_info,
     ).strip()
 
+    credentials = json.dumps({
+        "access_key": os.getenv("AWS_ACCESS_KEY"),
+        "secret_key": os.getenv("AWS_SECRET_KEY"),
+    })
+
     logger.info("Deploying terraform module")
     subprocess.check_call(
         ["terraform", "init"],
         cwd="terraform",
     )
     subprocess.check_call(
-        ["terraform", "apply", "-auto-approve", "-var", f"model={model_uuid}"],
+        [
+            "terraform",
+            "apply",
+            "-auto-approve",
+            "-var",
+            f"model={model_uuid}",
+            "-var",
+            f"s3_integrator_credentials={credentials}",
+        ],
         cwd="terraform",
     )
 
@@ -96,18 +110,4 @@ async def test_terraform(ops_test: OpsTest) -> None:
         timeout=SHORT_TIMEOUT,
     )
 
-    await ensure_statuses(ops_test)
-
-    logger.info("Configuring s3-integrator credentials")
-    await (
-        ops_test.model.applications["s3-integrator"]
-        .units[0]
-        .run_action(
-            action_name="sync-s3-credentials",
-            **{"access-key": "access", "secret-key": "secret"},
-        )
-    )
-
-    blocked_apps.remove("s3-integrator")
-    active_apps.append("s3-integrator")
     await ensure_statuses(ops_test)
