@@ -88,6 +88,8 @@ backends:
     # Manually pass specific environment variables
     environment:
       CI: '$(HOST: echo $CI)'
+      AWS_ACCESS_KEY: '$(HOST: echo $AWS_ACCESS_KEY)'
+      AWS_SECRET_KEY: '$(HOST: echo $AWS_SECRET_KEY)'
     systems:
       - ubuntu-22.04:
           username: runner
