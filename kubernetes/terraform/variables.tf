@@ -30,7 +30,7 @@ variable "mysql_server" {
     app_name    = optional(string, "mysql-k8s")
     base        = optional(string, "ubuntu@22.04")
     channel     = optional(string, "8.0/stable")
-    config      = optional(map(string), { "juju-external-hostname" = "mysql.local" })
+    config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
     revision    = optional(number, null)
