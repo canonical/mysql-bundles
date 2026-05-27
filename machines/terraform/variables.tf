@@ -115,3 +115,11 @@ variable "s3_integrator" {
     error_message = "Units count should be 1"
   }
 }
+
+variable "s3_integrator_credentials" {
+  description = "Defines the S3 integrator application credentials"
+  type = object({
+    access_key = optional(string, "")
+    secret_key = optional(string, "")
+  })
+}

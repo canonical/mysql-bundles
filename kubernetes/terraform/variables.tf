@@ -30,7 +30,7 @@ variable "mysql_server" {
     app_name    = optional(string, "mysql-k8s")
     base        = optional(string, "ubuntu@24.04")
     channel     = optional(string, "8.4/edge")
-    config      = optional(map(string), { "juju-external-hostname" = "mysql.local" })
+    config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
     revision    = optional(number, null)
@@ -117,4 +117,12 @@ variable "s3_integrator" {
     condition     = var.s3_integrator.units == 1
     error_message = "Units count should be 1"
   }
+}
+
+variable "s3_integrator_credentials" {
+  description = "Defines the S3 integrator application credentials"
+  type = object({
+    access_key = optional(string, "")
+    secret_key = optional(string, "")
+  })
 }
