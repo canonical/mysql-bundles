@@ -25,7 +25,7 @@ variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({
     app_name    = optional(string, "mysql")
-    base        = optional(string, "ubuntu@24.04")
+    base        = optional(string, "ubuntu@26.04")
     channel     = optional(string, "8.4/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
@@ -41,7 +41,7 @@ variable "mysql_router" {
   description = "Defines the MySQL Router application configuration"
   type = object({
     app_name    = optional(string, "mysql-router")
-    base        = optional(string, "ubuntu@24.04")
+    base        = optional(string, "ubuntu@26.04")
     channel     = optional(string, "8.4/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "")
@@ -78,7 +78,7 @@ variable "observability" {
   description = "Defines the observability application configuration"
   type = object({
     app_name    = optional(string, "grafana-agent")
-    base        = optional(string, "ubuntu@24.04")
+    base        = optional(string, "ubuntu@26.04")
     channel     = optional(string, "1/stable")
     config      = optional(map(string), {})
     constraints = optional(string, "")
