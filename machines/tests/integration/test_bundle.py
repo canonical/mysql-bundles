@@ -30,9 +30,9 @@ active_apps = [
 ]
 blocked_apps = [
     "data-integrator",
-    "grafana-agent",
-    "mysql-router-data-integrator",
     "landscape-client",
+    "mysql-router-data-integrator",
+    "opentelemetry-collector",
     "s3-integrator",
     "ubuntu-advantage",
 ]
