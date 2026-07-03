@@ -28,8 +28,8 @@ active_apps = [
 ]
 blocked_apps = [
     "data-integrator",
-    "grafana-agent-k8s",
     "mysql-router-data-integrator",
+    "opentelemetry-collector-k8s",
     "s3-integrator",
 ]
 
