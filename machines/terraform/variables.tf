@@ -77,11 +77,11 @@ variable "certificates" {
 variable "observability" {
   description = "Defines the observability application configuration"
   type = object({
-    app_name    = optional(string, "grafana-agent")
+    app_name    = optional(string, "opentelemetry-collector")
     base        = optional(string, "ubuntu@22.04")
-    channel     = optional(string, "1/stable")
+    channel     = optional(string, "2/stable")
     config      = optional(map(string), {})
-    constraints = optional(string, "")
+    constraints = optional(string, "arch=amd64")
     resources   = optional(map(string), {})
     revision    = optional(number, null)
     units       = optional(number, 1)

@@ -8,11 +8,6 @@ applications:
     series: jammy
     to:
     - '0'
-  grafana-agent:
-    channel: 1/edge
-    charm: grafana-agent
-    revision: 469
-    series: jammy
   landscape-client:
     channel: latest/edge
     charm: landscape-client
@@ -48,6 +43,11 @@ applications:
     charm: mysql-test-app
     constraints: arch=amd64
     revision: 73
+    series: jammy
+  opentelemetry-collector:
+    channel: 2/edge
+    charm: opentelemetry-collector
+    revision: 316
     series: jammy
   s3-integrator:
     channel: 1/edge
@@ -123,7 +123,7 @@ relations:
 - - mysql:database
   - sysbench:mysql
 - - mysql:cos-agent
-  - grafana-agent:cos-agent
+  - opentelemetry-collector:cos-agent
 - - mysql:juju-info
   - ubuntu-advantage:juju-info
 - - mysql:juju-info
@@ -131,9 +131,9 @@ relations:
 - - mysql-router:database
   - mysql-router-data-integrator:mysql
 - - mysql-router-data-integrator:juju-info
-  - grafana-agent:juju-info
+  - opentelemetry-collector:juju-info
 - - mysql-router:cos-agent
-  - grafana-agent:cos-agent
+  - opentelemetry-collector:cos-agent
 - - mysql-router-data-integrator:juju-info
   - ubuntu-advantage:juju-info
 - - mysql-router-data-integrator:juju-info
