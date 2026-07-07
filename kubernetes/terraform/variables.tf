@@ -24,6 +24,18 @@ variable "tls_offer" {
   default     = null
 }
 
+variable "deploy_mysql_router" {
+  description = "Whether to deploy the MySQL Router application, alongside the server, on this same model."
+  type        = bool
+  default     = true
+}
+
+variable "mysql_client_offer" {
+  description = "mysql_client offer to be created, which will expose the MySQL Server database endpoint for cross-model relations."
+  type        = string
+  default     = null
+}
+
 variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({
