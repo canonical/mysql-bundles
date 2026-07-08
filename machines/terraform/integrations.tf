@@ -96,7 +96,7 @@ resource "juju_offer" "mysql_client" {
   model_uuid = var.model
   count      = local.mysql_client_offered ? 1 : 0
 
-  name              = var.mysql_client_offer
-  application_name  = module.mysql_server.app_name
-  endpoints         = [module.mysql_server.provides.database]
+  name             = var.mysql_client_offer
+  application_name = module.mysql_server.app_name
+  endpoints        = [module.mysql_server.provides.database]
 }
