@@ -7,6 +7,7 @@
 import json
 import logging
 import os
+import shutil
 import subprocess
 
 import pytest
@@ -52,6 +53,7 @@ async def ensure_statuses(ops_test: OpsTest) -> None:
         )
 
 
+TF_BINARY = os.getenv("TF_BINARY", "terraform")
 
 
 @pytest.mark.abort_on_fail
@@ -73,14 +75,17 @@ async def test_terraform(ops_test: OpsTest) -> None:
         "secret_key": os.getenv("AWS_SECRET_KEY"),
     })
 
+    if not shutil.which(TF_BINARY):
+        pytest.skip(f"{TF_BINARY} not found on PATH")
+
     logger.info("Deploying terraform module")
     subprocess.check_call(
-        ["terraform", "init"],
+        [TF_BINARY, "init"],
         cwd="terraform",
     )
     subprocess.check_call(
         [
-            "terraform",
+            TF_BINARY,
             "apply",
             "-auto-approve",
             "-var",
