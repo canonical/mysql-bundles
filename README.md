@@ -13,7 +13,7 @@ get up and running with Canonical MySQL charms.
 
 To get started, please take Ubuntu 22.04 LTS and install the necessary components. It can be deployed
 on bare metal (using a [LXD](https://canonical.com/lxd) controller) or 
-on Kubernetes (using a [microk8s](https://canonical.com/microk8s) controller).
+on Kubernetes (using a [Canonical K8s](https://canonical.com/k8s) controller).
 
 ## Usage
 
