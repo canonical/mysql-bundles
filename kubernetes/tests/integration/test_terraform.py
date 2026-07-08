@@ -89,6 +89,8 @@ async def test_terraform(ops_test: OpsTest) -> None:
         "-var",
         f"s3_integrator_credentials={credentials}",
     ]
+    if storage_size := os.getenv("TF_MYSQL_STORAGE_SIZE"):
+        apply_args.extend(["-var", f"mysql_server={json.dumps({'storage_size': storage_size})}"])
     if s3_config:
         apply_args.extend(["-var", f"s3_integrator={json.dumps({'config': s3_config})}"])
 
