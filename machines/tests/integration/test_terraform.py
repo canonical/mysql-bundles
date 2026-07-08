@@ -4,11 +4,13 @@
 
 """Contains integration tests for the terraform module."""
 
+import base64
 import json
 import logging
 import os
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 from pytest_operator.plugin import OpsTest
@@ -78,21 +80,33 @@ async def test_terraform(ops_test: OpsTest) -> None:
     if not shutil.which(TF_BINARY):
         pytest.skip(f"{TF_BINARY} not found on PATH")
 
+    s3_config = {}
+    if endpoint := os.getenv("AWS_ENDPOINT_URL"):
+        s3_config["endpoint"] = endpoint
+    if ca_cert := os.getenv("CA_CERT"):
+        ca_path = Path(ca_cert)
+        ca_pem = ca_path.read_text() if ca_path.exists() else ca_cert
+        s3_config["tls-ca-chain"] = base64.b64encode(ca_pem.encode()).decode()
+
+    apply_args = [
+        TF_BINARY,
+        "apply",
+        "-auto-approve",
+        "-var",
+        f"model={model_uuid}",
+        "-var",
+        f"s3_integrator_credentials={credentials}",
+    ]
+    if s3_config:
+        apply_args.extend(["-var", f"s3_integrator={json.dumps({'config': s3_config})}"])
+
     logger.info("Deploying terraform module")
     subprocess.check_call(
         [TF_BINARY, "init"],
         cwd="terraform",
     )
     subprocess.check_call(
-        [
-            TF_BINARY,
-            "apply",
-            "-auto-approve",
-            "-var",
-            f"model={model_uuid}",
-            "-var",
-            f"s3_integrator_credentials={credentials}",
-        ],
+        apply_args,
         cwd="terraform",
     )
 
