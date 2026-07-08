@@ -52,18 +52,6 @@ async def ensure_statuses(ops_test: OpsTest) -> None:
         )
 
 
-@pytest.mark.abort_on_fail
-async def test_snap_install(ops_test: OpsTest) -> None:
-    """Install necessary binaries."""
-    logger.info("Installing terraform binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "terraform", "--classic"],
-    )
-
-    logger.info("Installing YQ binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "yq"],
-    )
 
 
 @pytest.mark.abort_on_fail
