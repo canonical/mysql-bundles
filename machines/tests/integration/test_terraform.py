@@ -55,7 +55,7 @@ async def ensure_statuses(ops_test: OpsTest) -> None:
         )
 
 
-TF_BINARY = os.getenv("TF_BINARY", "terraform")
+TF_BINARY = os.getenv("TF_BINARY") or "terraform"
 
 
 @pytest.mark.abort_on_fail

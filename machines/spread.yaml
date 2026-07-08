@@ -90,6 +90,9 @@ backends:
       CI: '$(HOST: echo $CI)'
       AWS_ACCESS_KEY: '$(HOST: echo $AWS_ACCESS_KEY)'
       AWS_SECRET_KEY: '$(HOST: echo $AWS_SECRET_KEY)'
+      AWS_ENDPOINT_URL: '$(HOST: echo $AWS_ENDPOINT_URL)'
+      CA_CERT: '$(HOST: echo $CA_CERT)'
+      TF_BINARY: '$(HOST: echo $TF_BINARY)'
     systems:
       - ubuntu-22.04:
           username: runner
