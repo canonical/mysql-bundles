@@ -93,13 +93,17 @@ async def test_terraform(ops_test: OpsTest) -> None:
         apply_args.extend(["-var", f"s3_integrator={json.dumps({'config': s3_config})}"])
 
     logger.info("Deploying terraform module")
-    subprocess.check_call(
+    subprocess.run(
         [TF_BINARY, "init"],
         cwd="terraform",
+        check=True,
+        timeout=10 * 60,
     )
-    subprocess.check_call(
+    subprocess.run(
         apply_args,
         cwd="terraform",
+        check=True,
+        timeout=10 * 60,
     )
 
     # Terraform deployed apps do not show right away.
