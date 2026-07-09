@@ -4,10 +4,13 @@
 
 """Contains integration tests for the terraform module."""
 
+import base64
 import json
 import logging
 import os
+import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 from pytest_operator.plugin import OpsTest
@@ -44,18 +47,7 @@ async def ensure_statuses(ops_test: OpsTest) -> None:
         )
 
 
-@pytest.mark.abort_on_fail
-async def test_snap_install(ops_test: OpsTest) -> None:
-    """Install necessary binaries."""
-    logger.info("Installing terraform binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "terraform", "--classic"],
-    )
-
-    logger.info("Installing YQ binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "yq"],
-    )
+TF_BINARY = os.getenv("TF_BINARY") or "terraform"
 
 
 @pytest.mark.abort_on_fail
@@ -77,22 +69,45 @@ async def test_terraform(ops_test: OpsTest) -> None:
         "secret_key": os.getenv("AWS_SECRET_KEY"),
     })
 
+    if not shutil.which(TF_BINARY):
+        pytest.skip(f"{TF_BINARY} not found on PATH")
+
+    s3_config = {}
+    if endpoint := os.getenv("AWS_ENDPOINT_URL"):
+        s3_config["endpoint"] = endpoint
+    if ca_cert := os.getenv("CA_CERT"):
+        ca_path = Path(ca_cert)
+        ca_pem = ca_path.read_text() if ca_path.exists() else ca_cert
+        s3_config["tls-ca-chain"] = base64.b64encode(ca_pem.encode()).decode()
+
+    storage_size = os.getenv("TF_MYSQL_STORAGE_SIZE")
+
+    apply_args = [
+        TF_BINARY,
+        "apply",
+        "-auto-approve",
+        "-var",
+        f"model={model_uuid}",
+        "-var",
+        f"s3_integrator_credentials={credentials}",
+    ]
+    if storage_size:
+        apply_args.extend(["-var", f"mysql_server={json.dumps({'storage_size': storage_size})}"])
+    if s3_config:
+        apply_args.extend(["-var", f"s3_integrator={json.dumps({'config': s3_config})}"])
+
     logger.info("Deploying terraform module")
-    subprocess.check_call(
-        ["terraform", "init"],
+    subprocess.run(
+        [TF_BINARY, "init"],
         cwd="terraform",
+        check=True,
+        timeout=10 * 60,
     )
-    subprocess.check_call(
-        [
-            "terraform",
-            "apply",
-            "-auto-approve",
-            "-var",
-            f"model={model_uuid}",
-            "-var",
-            f"s3_integrator_credentials={credentials}",
-        ],
+    subprocess.run(
+        apply_args,
         cwd="terraform",
+        check=True,
+        timeout=10 * 60,
     )
 
     # Terraform deployed apps do not show right away.
