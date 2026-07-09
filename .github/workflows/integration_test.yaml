@@ -124,7 +124,7 @@ jobs:
         env:
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          TF_MYSQL_STORAGE_SIZE: ${{ inputs.path-to-charm-directory == 'kubernetes' && '2G' || '' }}
+          TF_MYSQL_STORAGE_SIZE: '2G'
       - name: Upload Allure results
         timeout-minutes: 3
         # Only upload results from one spread system & one spread variant
