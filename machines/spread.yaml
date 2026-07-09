@@ -93,6 +93,7 @@ backends:
       AWS_ENDPOINT_URL: '$(HOST: echo $AWS_ENDPOINT_URL)'
       CA_CERT: '$(HOST: echo $CA_CERT)'
       TF_BINARY: '$(HOST: echo $TF_BINARY)'
+      TF_MYSQL_STORAGE_SIZE: '$(HOST: echo $TF_MYSQL_STORAGE_SIZE)'
     systems:
       - ubuntu-22.04:
           username: runner
