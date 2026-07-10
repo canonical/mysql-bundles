@@ -5,13 +5,14 @@
 """Contains integration tests for the terraform module."""
 
 import logging
-import subprocess
+import shutil
 
 import pytest
 from pytest_operator.plugin import OpsTest
 
 from .helpers import (
     Scenario,
+    TF_BINARY,
     clean_terraform_state,
     ensure_state,
     get_common_vars,
@@ -19,18 +20,6 @@ from .helpers import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@pytest.fixture(scope="module", autouse=True)
-def _fresh_terraform_state() -> None:
-    """Remove stale terraform state before the scenarios run.
-
-    Wiping the state once before the first scenario guarantees a clean start
-    against the current model; subsequent scenarios re-apply incrementally
-    (terraform apply is convergent) on that shared state.
-    """
-    clean_terraform_state()
-
 
 # Matrix of terraform deploy scenarios and their expected model state.
 # Each scenario re-applies on the shared model; terraform apply is convergent,
@@ -60,18 +49,17 @@ SCENARIOS = [
 ]
 
 
-@pytest.mark.abort_on_fail
-async def test_snap_install(ops_test: OpsTest) -> None:
-    """Install necessary binaries."""
-    logger.info("Installing terraform binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "terraform", "--classic"],
-    )
+@pytest.fixture(scope="module", autouse=True)
+def _terraform_setup() -> None:
+    """Skip if the terraform binary is missing, then clean stale state.
 
-    logger.info("Installing YQ binary")
-    subprocess.check_call(
-        ["sudo", "snap", "install", "yq"],
-    )
+    Snap installation is handled by Concierge; this fixture only ensures the
+    configured terraform (or OpenTofu, via TF_BINARY) is available and that no
+    stale state referencing a since-destroyed model is carried over.
+    """
+    if not shutil.which(TF_BINARY):
+        pytest.skip(f"{TF_BINARY} not found on PATH")
+    clean_terraform_state()
 
 
 @pytest.mark.abort_on_fail

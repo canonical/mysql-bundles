@@ -95,6 +95,18 @@ jobs:
     runs-on: ${{ matrix.job.runner }}
     timeout-minutes: 211  # Sum of steps `timeout-minutes` + 5
     steps:
+      - name: Purge Docker
+        if: ${{ inputs.path-to-charm-directory == 'kubernetes' }}
+        timeout-minutes: 5
+        run: |
+          sudo apt-get remove --purge -y docker-ce docker-ce-cli containerd.io docker.io containerd 2>/dev/null || true
+          sudo nft flush ruleset
+          sudo ip link delete docker0 2>/dev/null || true
+      - name: Remove podman CNI bridge config
+        if: ${{ inputs.path-to-charm-directory == 'kubernetes' }}
+        timeout-minutes: 1
+        run: |
+          sudo rm -f /etc/cni/net.d/87-podman-bridge.conflist
       - name: Checkout
         timeout-minutes: 3
         uses: actions/checkout@v6
@@ -112,6 +124,7 @@ jobs:
         env:
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          TF_MYSQL_STORAGE_SIZE: '2G'
       - name: Upload Allure results
         timeout-minutes: 3
         # Only upload results from one spread system & one spread variant

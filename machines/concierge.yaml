@@ -11,3 +11,6 @@ host:
       channel: latest/edge
       connections:
         - jhack:dot-local-share-juju snapd
+    terraform:
+      classic: true
+    yq: {}

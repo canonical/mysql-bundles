@@ -57,10 +57,10 @@ backends:
       git restore pyproject.toml poetry.lock
 
       # Use instead of `concierge restore` to save time between tests
-      # For example, with microk8s, using `concierge restore` takes twice as long as this (e.g. 6
+      # For example, with k8s, using `concierge restore` takes twice as long as this (e.g. 6
       # min instead of 3 min between every spread job)
       juju destroy-model --force --no-wait --destroy-storage --no-prompt testing
-      juju kill-controller --no-prompt concierge-microk8s
+      juju kill-controller --no-prompt concierge-k8s
     restore: |
       rm -rf "$SPREAD_PATH"
 
@@ -90,6 +90,10 @@ backends:
       CI: '$(HOST: echo $CI)'
       AWS_ACCESS_KEY: '$(HOST: echo $AWS_ACCESS_KEY)'
       AWS_SECRET_KEY: '$(HOST: echo $AWS_SECRET_KEY)'
+      AWS_ENDPOINT_URL: '$(HOST: echo $AWS_ENDPOINT_URL)'
+      CA_CERT: '$(HOST: echo $CA_CERT)'
+      TF_BINARY: '$(HOST: echo $TF_BINARY)'
+      TF_MYSQL_STORAGE_SIZE: '$(HOST: echo $TF_MYSQL_STORAGE_SIZE)'
     systems:
       - ubuntu-22.04:
           username: runner
@@ -112,6 +116,17 @@ prepare: |
 
   # Install charmcraft & pipx (on lxd-vm backend)
   concierge prepare --trace
+
+  # k8s status --wait-ready returns as soon as 1 node is ready
+  # (see https://github.com/canonical/k8s-snap/issues/1789)
+  # but Cilium, CoreDNS, and storage may still be initialising
+  for res in deployment/cilium-operator deployment/coredns deployment/metrics-server daemonset/cilium daemonset/ck-storage-rawfile-csi-node statefulset/ck-storage-rawfile-csi-controller; do
+    if k8s kubectl -n kube-system get "$res" >/dev/null 2>&1; then
+      k8s kubectl -n kube-system rollout status "$res" --timeout=5m
+    else
+      echo "Skipping rollout status for missing $res"
+    fi
+  done
 
   pipx install tox poetry
 prepare-each: |

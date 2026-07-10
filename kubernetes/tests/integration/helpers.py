@@ -1,6 +1,7 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+import base64
 import json
 import logging
 import os
@@ -9,6 +10,7 @@ from dataclasses import (
     dataclass,
     field,
 )
+from pathlib import Path
 from typing import (
     Dict,
     List,
@@ -19,8 +21,11 @@ from pytest_operator.plugin import OpsTest
 
 logger = logging.getLogger(__name__)
 
+TF_BINARY = os.getenv("TF_BINARY") or "terraform"
+
 TIMEOUT = 20 * 60
 SHORT_TIMEOUT = 5 * 60
+APPLY_TIMEOUT = 10 * 60
 
 
 @dataclass
@@ -73,25 +78,52 @@ def get_s3_credentials() -> str:
     })
 
 
+def get_s3_config() -> Dict[str, str]:
+    """Build the s3 integrator config from environment variables, if any."""
+    s3_config: Dict[str, str] = {}
+    if endpoint := os.getenv("AWS_ENDPOINT_URL"):
+        s3_config["endpoint"] = endpoint
+    if ca_cert := os.getenv("CA_CERT"):
+        ca_path = Path(ca_cert)
+        ca_pem = ca_path.read_text() if ca_path.exists() else ca_cert
+        s3_config["tls-ca-chain"] = base64.b64encode(ca_pem.encode()).decode()
+    return s3_config
+
+
 def get_common_vars(ops_test: OpsTest) -> Dict[str, str]:
     """Build the terraform vars shared across all scenarios."""
-    return {
+    common: Dict[str, str] = {
         "model": get_model_uuid(ops_test),
         "s3_integrator_credentials": get_s3_credentials(),
     }
+    if s3_config := get_s3_config():
+        common["s3_integrator"] = json.dumps({"config": s3_config})
+    if storage_size := os.getenv("TF_MYSQL_STORAGE_SIZE"):
+        common["mysql_server"] = json.dumps({"storage_size": storage_size})
+    return common
 
 
 def terraform_apply(terraform_vars: Dict[str, str]) -> None:
     """Run terraform init and apply with the given variables."""
     logger.info("Running terraform init")
-    subprocess.check_call(["terraform", "init"], cwd="terraform")
+    subprocess.run(
+        [TF_BINARY, "init"],
+        cwd="terraform",
+        check=True,
+        timeout=APPLY_TIMEOUT,
+    )
 
-    args = ["terraform", "apply", "-auto-approve"]
+    args = [TF_BINARY, "apply", "-auto-approve"]
     for key, value in terraform_vars.items():
         args.extend(["-var", f"{key}={value}"])
 
     logger.info("Running terraform apply")
-    subprocess.check_call(args, cwd="terraform")
+    subprocess.run(
+        args,
+        cwd="terraform",
+        check=True,
+        timeout=APPLY_TIMEOUT,
+    )
 
 
 def clean_terraform_state() -> None:
