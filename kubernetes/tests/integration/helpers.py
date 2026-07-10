@@ -52,8 +52,17 @@ def get_offer_names(ops_test: OpsTest) -> Set[str]:
         ["juju", "offers", "--model", ops_test.model.name, "--format", "json"],
         text=True,
     )
-    offers = json.loads(result) or []
-    return {offer.get("Offer", offer.get("offer", "")) for offer in offers}
+    offers = json.loads(result)
+    if isinstance(offers, dict):
+        # juju returns a mapping of offer name -> offer details.
+        return set(offers)
+    names: Set[str] = set()
+    for offer in offers or []:
+        if isinstance(offer, str):
+            names.add(offer)
+        elif isinstance(offer, dict):
+            names.add(offer.get("Offer") or offer.get("offer") or "")
+    return names
 
 
 def get_model_uuid(ops_test: OpsTest) -> str:
