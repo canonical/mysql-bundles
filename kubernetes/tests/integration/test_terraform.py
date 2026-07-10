@@ -7,8 +7,8 @@
 import logging
 import shutil
 
+import jubilant
 import pytest
-from pytest_operator.plugin import OpsTest
 
 from .helpers import (
     TF_BINARY,
@@ -63,8 +63,8 @@ def _terraform_setup() -> None:
 
 @pytest.mark.abort_on_fail
 @pytest.mark.parametrize("scenario", SCENARIOS, ids=[s.name for s in SCENARIOS])
-async def test_terraform(ops_test: OpsTest, scenario: Scenario) -> None:
+def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
     """Deploy the terraform module for the given scenario and verify its state."""
     logger.info(f"Deploying terraform module for scenario '{scenario.name}'")
-    terraform_apply({**get_common_vars(ops_test), **scenario.vars})
-    await ensure_state(ops_test, scenario)
+    terraform_apply({**get_common_vars(juju), **scenario.vars})
+    ensure_state(juju, scenario)

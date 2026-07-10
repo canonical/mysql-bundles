@@ -14,17 +14,15 @@ from pathlib import Path
 from typing import (
     Dict,
     List,
-    Set,
 )
 
-from pytest_operator.plugin import OpsTest
+import jubilant
 
 logger = logging.getLogger(__name__)
 
 TF_BINARY = os.getenv("TF_BINARY") or "terraform"
 
 TIMEOUT = 20 * 60
-SHORT_TIMEOUT = 5 * 60
 APPLY_TIMEOUT = 10 * 60
 
 
@@ -41,42 +39,9 @@ class Scenario:
     offers: List[str] = field(default_factory=list)
 
 
-def get_app_statuses(ops_test: OpsTest, app_names: List[str]) -> Set[str]:
-    """Get statuses of applications."""
-    return {ops_test.model.applications[app].status for app in app_names}
-
-
-def get_offer_names(ops_test: OpsTest) -> Set[str]:
-    """Get the names of cross-model offers deployed in the model."""
-    result = subprocess.check_output(
-        ["juju", "offers", "--model", ops_test.model.name, "--format", "json"],
-        text=True,
-    )
-    offers = json.loads(result)
-    if isinstance(offers, dict):
-        # juju returns a mapping of offer name -> offer details.
-        return set(offers)
-    names: Set[str] = set()
-    for offer in offers or []:
-        if isinstance(offer, str):
-            names.add(offer)
-        elif isinstance(offer, dict):
-            names.add(offer.get("Offer") or offer.get("offer") or "")
-    return names
-
-
-def get_model_uuid(ops_test: OpsTest) -> str:
+def get_model_uuid(juju: jubilant.Juju) -> str:
     """Get the UUID of the test model."""
-    model_info = subprocess.check_output(
-        ["juju", "show-model", ops_test.model.name],
-        text=True,
-        input=None,
-    )
-    return subprocess.check_output(
-        ["yq", f'."{ops_test.model.name}"."model-uuid"'],
-        text=True,
-        input=model_info,
-    ).strip()
+    return juju.show_model().model_uuid
 
 
 def get_s3_credentials() -> str:
@@ -99,10 +64,10 @@ def get_s3_config() -> Dict[str, str]:
     return s3_config
 
 
-def get_common_vars(ops_test: OpsTest) -> Dict[str, str]:
+def get_common_vars(juju: jubilant.Juju) -> Dict[str, str]:
     """Build the terraform vars shared across all scenarios."""
     common: Dict[str, str] = {
-        "model": get_model_uuid(ops_test),
+        "model": get_model_uuid(juju),
         "s3_integrator_credentials": get_s3_credentials(),
     }
     if s3_config := get_s3_config():
@@ -147,49 +112,42 @@ def clean_terraform_state() -> None:
             os.remove(path)
 
 
-async def ensure_state(ops_test: OpsTest, scenario: Scenario) -> None:
-    """Ensure the model matches the expected state for the given scenario."""
+def _apps_match(status: jubilant.Status, scenario: Scenario) -> bool:
+    """Check that present/absent apps and offers match the scenario."""
     present_apps = {
         *scenario.active_apps,
         *scenario.blocked_apps,
         *scenario.unknown_apps,
     }
-
-    logger.info(f"Waiting for apps to settle: {', '.join(sorted(present_apps))}")
-    await ops_test.model.block_until(
-        lambda: set(ops_test.model.applications) == present_apps,
-        timeout=SHORT_TIMEOUT,
-    )
-
-    if scenario.active_apps:
-        logger.info(f"Waiting for active: {', '.join(scenario.active_apps)}")
-        await ops_test.model.block_until(
-            lambda: get_app_statuses(ops_test, scenario.active_apps) == {"active"},
-            timeout=TIMEOUT,
-        )
-
-    if scenario.blocked_apps:
-        logger.info(f"Waiting for blocked: {', '.join(scenario.blocked_apps)}")
-        await ops_test.model.block_until(
-            lambda: get_app_statuses(ops_test, scenario.blocked_apps) == {"blocked"},
-            timeout=SHORT_TIMEOUT,
-        )
-
-    if scenario.unknown_apps:
-        logger.info(f"Waiting for unknown: {', '.join(scenario.unknown_apps)}")
-        await ops_test.model.block_until(
-            lambda: get_app_statuses(ops_test, scenario.unknown_apps) == {"unknown"},
-            timeout=SHORT_TIMEOUT,
-        )
-
+    if set(status.apps) != present_apps:
+        return False
     for app in scenario.absent_apps:
-        logger.info(f"Ensuring {app} was not deployed")
-        assert app not in ops_test.model.applications
+        if app in status.apps:
+            return False
+    for offer in scenario.offers:
+        if offer not in status.offers:
+            return False
+    return True
 
-    if scenario.offers:
-        logger.info(f"Ensuring offers: {', '.join(scenario.offers)}")
 
-        def offers_present() -> bool:
-            return set(scenario.offers).issubset(get_offer_names(ops_test))
+def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
+    """Check that app statuses match the scenario."""
+    for app in scenario.active_apps:
+        if not status.apps[app].is_active:
+            return False
+    for app in scenario.blocked_apps:
+        if not status.apps[app].is_blocked:
+            return False
+    for app in scenario.unknown_apps:
+        if status.apps[app].app_status.current != "unknown":
+            return False
+    return True
 
-        await ops_test.model.block_until(offers_present, timeout=SHORT_TIMEOUT)
+
+def ensure_state(juju: jubilant.Juju, scenario: Scenario) -> None:
+    """Ensure the model matches the expected state for the given scenario."""
+    juju.wait(
+        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
+        error=jubilant.any_error,
+        timeout=TIMEOUT,
+    )
