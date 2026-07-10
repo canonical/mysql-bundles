@@ -129,9 +129,7 @@ def terraform_apply(terraform_vars: Dict[str, str]) -> None:
 def clean_terraform_state() -> None:
     """Remove stale terraform state files to ensure a fresh deploy.
 
-    Terraform refresh fails when the state references a model that no longer
-    exists (e.g. from a previous run against a since-destroyed model). Wiping
-    the state before the first apply guarantees a clean start.
+    Wiping the state before the first apply guarantees a clean start.
     """
     for state_file in ("terraform.tfstate", "terraform.tfstate.backup"):
         path = os.path.join("terraform", state_file)

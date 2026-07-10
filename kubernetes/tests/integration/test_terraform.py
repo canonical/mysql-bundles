@@ -11,8 +11,8 @@ import pytest
 from pytest_operator.plugin import OpsTest
 
 from .helpers import (
-    Scenario,
     TF_BINARY,
+    Scenario,
     clean_terraform_state,
     ensure_state,
     get_common_vars,
@@ -22,8 +22,7 @@ from .helpers import (
 logger = logging.getLogger(__name__)
 
 # Matrix of terraform deploy scenarios and their expected model state.
-# Each scenario re-applies on the shared model; terraform apply is convergent,
-# so each apply brings the model to the scenario's declared state.
+# Each scenario re-applies on the shared model.
 SCENARIOS = [
     Scenario(
         name="default",
@@ -53,9 +52,9 @@ SCENARIOS = [
 def _terraform_setup() -> None:
     """Skip if the terraform binary is missing, then clean stale state.
 
-    Snap installation is handled by Concierge; this fixture only ensures the
-    configured terraform (or OpenTofu, via TF_BINARY) is available and that no
-    stale state referencing a since-destroyed model is carried over.
+    Snap installation is handled by Concierge; this fixture ensures:
+    1. configured terraform (or OpenTofu, via TF_BINARY) is available and
+    2. no stale state referencing a since-destroyed model is carried over.
     """
     if not shutil.which(TF_BINARY):
         pytest.skip(f"{TF_BINARY} not found on PATH")
