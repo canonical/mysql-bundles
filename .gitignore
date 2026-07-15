@@ -4,6 +4,8 @@
 *.pytest_cache
 *.terraform
 *.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
 
 build/
 venv/
