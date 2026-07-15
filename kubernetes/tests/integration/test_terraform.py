@@ -17,6 +17,7 @@ from .helpers import (
     ensure_state,
     get_common_vars,
     terraform_apply,
+    terraform_init,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,12 @@ def _terraform_setup() -> None:
     if not shutil.which(TF_BINARY):
         pytest.skip(f"{TF_BINARY} not found on PATH")
     clean_terraform_state()
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _terraform_init(_terraform_setup) -> None:
+    """Run terraform init once before the first scenario."""
+    terraform_init()
 
 
 @pytest.mark.abort_on_fail

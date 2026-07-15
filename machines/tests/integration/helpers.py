@@ -12,6 +12,7 @@ from dataclasses import (
 )
 from pathlib import Path
 from typing import (
+    Any,
     Dict,
     List,
 )
@@ -31,7 +32,7 @@ class Scenario:
     """A terraform deploy scenario and its expected model state."""
 
     name: str
-    vars: Dict[str, str] = field(default_factory=dict)
+    vars: Dict[str, Any] = field(default_factory=dict)
     active_apps: List[str] = field(default_factory=list)
     blocked_apps: List[str] = field(default_factory=list)
     unknown_apps: List[str] = field(default_factory=list)
@@ -44,12 +45,12 @@ def get_model_uuid(juju: jubilant.Juju) -> str:
     return juju.show_model().model_uuid
 
 
-def get_s3_credentials() -> str:
-    """Build the s3 integrator credentials JSON from environment variables."""
-    return json.dumps({
+def get_s3_credentials() -> Dict[str, str]:
+    """Build the s3 integrator credentials from environment variables."""
+    return {
         "access_key": os.getenv("AWS_ACCESS_KEY"),
         "secret_key": os.getenv("AWS_SECRET_KEY"),
-    })
+    }
 
 
 def get_s3_config() -> Dict[str, str]:
@@ -64,21 +65,28 @@ def get_s3_config() -> Dict[str, str]:
     return s3_config
 
 
-def get_common_vars(juju: jubilant.Juju) -> Dict[str, str]:
+def get_common_vars(juju: jubilant.Juju) -> Dict[str, Any]:
     """Build the terraform vars shared across all scenarios."""
-    common: Dict[str, str] = {
+    common: Dict[str, Any] = {
         "model": get_model_uuid(juju),
         "s3_integrator_credentials": get_s3_credentials(),
     }
     if s3_config := get_s3_config():
-        common["s3_integrator"] = json.dumps({"config": s3_config})
+        common["s3_integrator"] = {"config": s3_config}
     if storage_size := os.getenv("TF_MYSQL_STORAGE_SIZE"):
-        common["mysql_server"] = json.dumps({"storage_size": storage_size})
+        common["mysql_server"] = {"storage_size": storage_size}
     return common
 
 
-def terraform_apply(terraform_vars: Dict[str, str]) -> None:
-    """Run terraform init and apply with the given variables."""
+def _serialize_var(value: Any) -> str:
+    """Serialize a terraform variable value to a CLI-compatible string."""
+    if isinstance(value, str):
+        return value
+    return json.dumps(value)
+
+
+def terraform_init() -> None:
+    """Run terraform init."""
     logger.info("Running terraform init")
     subprocess.run(
         [TF_BINARY, "init"],
@@ -87,9 +95,12 @@ def terraform_apply(terraform_vars: Dict[str, str]) -> None:
         timeout=APPLY_TIMEOUT,
     )
 
+
+def terraform_apply(terraform_vars: Dict[str, Any]) -> None:
+    """Run terraform apply with the given variables."""
     args = [TF_BINARY, "apply", "-auto-approve"]
     for key, value in terraform_vars.items():
-        args.extend(["-var", f"{key}={value}"])
+        args.extend(["-var", f"{key}={_serialize_var(value)}"])
 
     logger.info("Running terraform apply")
     subprocess.run(
