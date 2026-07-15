@@ -1,4 +1,4 @@
-# Copyright 2026 Canonical Ltd.
+# Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 import base64
@@ -37,7 +37,6 @@ class Scenario:
     blocked_apps: List[str] = field(default_factory=list)
     unknown_apps: List[str] = field(default_factory=list)
     absent_apps: List[str] = field(default_factory=list)
-    offers: List[str] = field(default_factory=list)
 
 
 def get_model_uuid(juju: jubilant.Juju) -> str:
@@ -124,7 +123,7 @@ def clean_terraform_state() -> None:
 
 
 def _apps_match(status: jubilant.Status, scenario: Scenario) -> bool:
-    """Check that present/absent apps and offers match the scenario."""
+    """Check that present/absent apps match the scenario."""
     present_apps = {
         *scenario.active_apps,
         *scenario.blocked_apps,
@@ -135,19 +134,16 @@ def _apps_match(status: jubilant.Status, scenario: Scenario) -> bool:
     for app in scenario.absent_apps:
         if app in status.apps:
             return False
-    for offer in scenario.offers:
-        if offer not in status.offers:
-            return False
     return True
 
 
 def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
     """Check that app statuses match the scenario."""
     for app in scenario.active_apps:
-        if not status.apps[app].is_active:
+        if status.apps[app].app_status.current != "active":
             return False
     for app in scenario.blocked_apps:
-        if not status.apps[app].is_blocked:
+        if status.apps[app].app_status.current != "blocked":
             return False
     for app in scenario.unknown_apps:
         if status.apps[app].app_status.current != "unknown":

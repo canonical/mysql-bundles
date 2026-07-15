@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Canonical Ltd.
+# Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Pytest fixtures for terraform integration tests."""
@@ -12,21 +12,9 @@ import jubilant
 import pytest
 
 CONCIERGE_MODEL_NAME = "testing"
-CLOUD_TYPE = "lxd"
+CLOUD_TYPES = ("k8s", "kubernetes")
 
 logger = logging.getLogger(__name__)
-
-
-def pytest_addoption(parser):
-    """Defines pytest parsers."""
-    parser.addoption("--bundle", action="store", help="run specific bundle")
-
-
-def pytest_generate_tests(metafunc):
-    """Processes pytest parsers."""
-    bundle = metafunc.config.option.bundle
-    if "bundle" in metafunc.fixturenames and bundle is not None:
-        metafunc.parametrize("bundle", [bundle])
 
 
 @pytest.fixture(scope="module")
@@ -43,18 +31,18 @@ def arch() -> str:
 def juju(arch: str):
     """Use the concierge 'testing' model if available, else create a temp model.
 
-    On CI, Concierge bootstraps a controller and creates a 'testing' model.
-    For local development, fall back to a temporary model on the LXD cloud.
+    On CI, Concierge bootstraps a k8s controller and creates a 'testing' model.
+    For local development, fall back to a temporary model on the k8s cloud.
     """
     temp_juju = jubilant.Juju()
 
     # Discover clouds matching our desired type
     clouds = json.loads(temp_juju.cli("clouds", "--format", "json", include_model=False))
     matching_clouds = {
-        cloud for cloud, details in clouds.items() if CLOUD_TYPE == details.get("type")
+        cloud for cloud, details in clouds.items() if details.get("type") in CLOUD_TYPES
     }
     if not matching_clouds:
-        pytest.skip(f"No {CLOUD_TYPE} cloud found")
+        pytest.skip(f"No {CLOUD_TYPES} cloud found")
 
     # Check if the concierge "testing" model already exists on a matching cloud
     models = json.loads(temp_juju.cli("models", "--format", "json", include_model=False))

@@ -22,7 +22,7 @@ codespell = "2.3.0"
 
 [tool.poetry.group.integration.dependencies]
 pytest = "^8.3.3"
-jubilant = ">=1.8,<2"
+jubilant = "^1.8"
 allure-pytest = "^2.13.5"
 allure-pytest-default-results = "^0.1.4"
 

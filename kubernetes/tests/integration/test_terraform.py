@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2026 Canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Contains integration tests for the terraform module."""
@@ -52,7 +52,6 @@ def _terraform_init(_terraform_setup) -> None:
     terraform_init()
 
 
-@pytest.mark.abort_on_fail
 @pytest.mark.parametrize("scenario", SCENARIOS, ids=[s.name for s in SCENARIOS])
 def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
     """Deploy the terraform module for the given scenario and verify its state."""
