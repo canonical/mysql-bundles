@@ -79,9 +79,9 @@ def get_common_vars(juju: jubilant.Juju) -> Dict[str, Any]:
 
 def _serialize_var(value: Any) -> str:
     """Serialize a terraform variable value to a CLI-compatible string."""
-    if isinstance(value, str):
-        return value
-    return json.dumps(value)
+    if isinstance(value, (dict, list)):
+        return json.dumps(value)
+    return str(value)
 
 
 def terraform_init() -> None:
