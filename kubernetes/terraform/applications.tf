@@ -33,6 +33,7 @@ resource "juju_application" "observability" {
   config      = var.observability.config
   constraints = var.observability.constraints
   units       = var.observability.units
+  trust       = true
 }
 
 resource "juju_application" "s3_integrator" {
