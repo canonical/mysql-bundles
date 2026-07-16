@@ -13,8 +13,9 @@ import pytest
 from .helpers import (
     TF_BINARY,
     Scenario,
+    _apps_match,
+    _statuses_match,
     clean_terraform_state,
-    ensure_state,
     get_common_vars,
     terraform_apply,
     terraform_init,
@@ -57,4 +58,8 @@ def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
     """Deploy the terraform module for the given scenario and verify its state."""
     logger.info(f"Deploying terraform module for scenario '{scenario.name}'")
     terraform_apply({**get_common_vars(juju), **scenario.vars})
-    ensure_state(juju, scenario)
+
+    juju.wait(
+        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
+        error=jubilant.any_error,
+    )

@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 TF_BINARY = os.getenv("TF_BINARY") or "terraform"
 
-TIMEOUT = 20 * 60
 APPLY_TIMEOUT = 10 * 60
 
 
@@ -149,12 +148,3 @@ def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
         if status.apps[app].app_status.current != "unknown":
             return False
     return True
-
-
-def ensure_state(juju: jubilant.Juju, scenario: Scenario) -> None:
-    """Ensure the model matches the expected state for the given scenario."""
-    juju.wait(
-        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
-        error=jubilant.any_error,
-        timeout=TIMEOUT,
-    )
