@@ -11,10 +11,20 @@ from platform import machine
 import jubilant
 import pytest
 
-CONCIERGE_MODEL_NAME = "testing"
 CLOUD_TYPES = ("k8s", "kubernetes")
 
 logger = logging.getLogger(__name__)
+
+
+def pytest_addoption(parser):
+    """Adds command line parameter ``--model`` (see help for details)."""
+    parser.addoption(
+        "--model",
+        action="store",
+        default="testing",
+        help="model name or ':auto:' for temporary model, default to 'testing'",
+        required=False,
+    )
 
 
 @pytest.fixture(scope="module")
@@ -28,40 +38,32 @@ def arch() -> str:
 
 
 @pytest.fixture(scope="module")
-def juju(arch: str):
-    """Use the concierge 'testing' model if available, else create a temp model.
+def juju(request: pytest.FixtureRequest, arch: str):
+    """Use the model specified via ``--model`` (default ``testing``), or a temp model.
 
-    On CI, Concierge bootstraps a k8s controller and creates a 'testing' model.
-    For local development, fall back to a temporary model on the k8s cloud.
+    Pass ``--model=:auto:`` to create a temporary model instead of using the
+    concierge-provided ``testing`` model.
     """
-    temp_juju = jubilant.Juju()
+    model = request.config.getoption("--model")
 
-    # Discover clouds matching our desired type
+    # if existing model is present and set, use it
+    if model != ":auto:":
+        juju_model = jubilant.Juju(model=model, wait_timeout=1000)
+        yield juju_model
+        return
+
+    # ...else, create a temporary model on a matching cloud
+    temp_juju = jubilant.Juju()
     clouds = json.loads(temp_juju.cli("clouds", "--format", "json", include_model=False))
     matching_clouds = {
         cloud for cloud, details in clouds.items() if details.get("type") in CLOUD_TYPES
     }
     if not matching_clouds:
-        pytest.skip(f"No {CLOUD_TYPES} cloud found")
+        pytest.fail(f"No {CLOUD_TYPES} cloud found")
 
-    # Check if the concierge "testing" model already exists on a matching cloud
-    models = json.loads(temp_juju.cli("models", "--format", "json", include_model=False))
-    for model in models["models"]:
-        if CONCIERGE_MODEL_NAME == model["short-name"] and model.get("cloud") in matching_clouds:
-            controller = model.get("controller", "")
-            model_name = (
-                f"{controller}:{CONCIERGE_MODEL_NAME}" if controller else CONCIERGE_MODEL_NAME
-            )
-            logger.info(f"Using concierge model: {model_name}")
-            juju_concierge = jubilant.Juju(model=model_name, wait_timeout=1000)
-            juju_concierge.cli("set-model-constraints", f"arch={arch}")
-            yield juju_concierge
-            return
-
-    # Fall back to a temporary model on the relevant cloud
     cloud_name = next(iter(matching_clouds))
     logger.info(f"Creating temp model on cloud {cloud_name}")
     with jubilant.temp_model(cloud=cloud_name) as juju_temp:
         juju_temp.wait_timeout = 1000
-        juju_temp.cli("set-model-constraints", f"arch={arch}")
+        juju_temp.model_constraints({"arch": arch})
         yield juju_temp
