@@ -118,13 +118,3 @@ resource "juju_integration" "mysql_router_cos_metrics" {
   }
 }
 
-# CROSS-MODEL OFFER FOR THE MYSQL CLIENT ENDPOINT
-
-resource "juju_offer" "mysql_client" {
-  model_uuid = var.model
-  count      = local.mysql_client_offered ? 1 : 0
-
-  name             = var.mysql_client_offer
-  application_name = module.mysql_server.app_name
-  endpoints        = [module.mysql_server.provides.database]
-}

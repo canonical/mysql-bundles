@@ -16,9 +16,3 @@ output "provides" {
   }
 }
 
-output "offers" {
-  description = "Map of all the cross-model offers created by this module."
-  value = {
-    mysql_client = local.mysql_client_offered ? juju_offer.mysql_client[0].url : null
-  }
-}

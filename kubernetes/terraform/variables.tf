@@ -30,12 +30,6 @@ variable "deploy_mysql_router" {
   default     = true
 }
 
-variable "mysql_client_offer" {
-  description = "mysql_client offer to be created, which will expose the MySQL Server database endpoint for cross-model relations."
-  type        = string
-  default     = null
-}
-
 variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({

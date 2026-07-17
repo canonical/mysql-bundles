@@ -5,7 +5,6 @@ locals {
   cos_enabled          = var.cos_offers.dashboard != null ? true : false
   tls_enabled          = var.tls_offer != null ? true : false
   mysql_router_enabled = var.deploy_mysql_router
-  mysql_client_offered = var.mysql_client_offer != null ? true : false
 }
 
 module "mysql_server" {
