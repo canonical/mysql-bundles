@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Canonical Ltd.
+# Copyright 2026 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Pytest fixtures for terraform integration tests."""
@@ -11,14 +11,13 @@ from platform import machine
 import jubilant
 import pytest
 
-CLOUD_TYPE = "lxd"
+CLOUD_TYPES = ("k8s", "kubernetes")
 
 logger = logging.getLogger(__name__)
 
 
 def pytest_addoption(parser):
-    """Defines pytest parsers."""
-    parser.addoption("--bundle", action="store", help="run specific bundle")
+    """Adds command line parameter ``--model`` (see help for details)."""
     parser.addoption(
         "--model",
         action="store",
@@ -26,13 +25,6 @@ def pytest_addoption(parser):
         help="model name or ':auto:' for temporary model, default to 'testing'",
         required=False,
     )
-
-
-def pytest_generate_tests(metafunc):
-    """Processes pytest parsers."""
-    bundle = metafunc.config.option.bundle
-    if "bundle" in metafunc.fixturenames and bundle is not None:
-        metafunc.parametrize("bundle", [bundle])
 
 
 @pytest.fixture(scope="module")
@@ -64,10 +56,10 @@ def juju(request: pytest.FixtureRequest, arch: str):
     temp_juju = jubilant.Juju()
     clouds = json.loads(temp_juju.cli("clouds", "--format", "json", include_model=False))
     matching_clouds = {
-        cloud for cloud, details in clouds.items() if CLOUD_TYPE == details.get("type")
+        cloud for cloud, details in clouds.items() if details.get("type") in CLOUD_TYPES
     }
     if not matching_clouds:
-        pytest.fail(f"No {CLOUD_TYPE} cloud found")
+        pytest.fail(f"No {CLOUD_TYPES} cloud found")
 
     cloud_name = next(iter(matching_clouds))
     logger.info(f"Creating temp model on cloud {cloud_name}")

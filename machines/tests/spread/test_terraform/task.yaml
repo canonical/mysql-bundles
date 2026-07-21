@@ -3,7 +3,7 @@ environment:
   TEST_MODULE: test_terraform.py
 execute: |
   # TODO: Uncomment when opentelemetry-collector gets built for Ubuntu 26.04
-  # tox run -e integration -- "tests/integration/$TEST_MODULE" --model testing --alluredir="$SPREAD_TASK/allure-results"
+  # tox run -e integration -- "tests/integration/$TEST_MODULE" --alluredir="$SPREAD_TASK/allure-results"
   exit 0
 artifacts:
   - allure-results
