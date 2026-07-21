@@ -5,7 +5,7 @@
 
 resource "juju_integration" "mysql_server_router" {
   model_uuid = var.model
-  count      = local.mysql_router_enabled ? 1 : 0
+  count      = var.router_enabled && var.mysql_router.units > 0 ? 1 : 0
 
   application {
     name     = module.mysql_server.app_name
@@ -64,7 +64,7 @@ resource "juju_integration" "mysql_server_dashboard" {
 
 resource "juju_integration" "mysql_router_certificates" {
   model_uuid = var.model
-  count      = local.tls_enabled && local.mysql_router_enabled && var.mysql_router.units > 0 ? 1 : 0
+  count      = local.tls_enabled && var.router_enabled && var.mysql_router.units > 0 ? 1 : 0
 
   application {
     name     = module.mysql_router[0].app_name
@@ -78,7 +78,7 @@ resource "juju_integration" "mysql_router_certificates" {
 
 resource "juju_integration" "mysql_router_dashboard" {
   model_uuid = var.model
-  count      = local.cos_enabled && local.mysql_router_enabled && var.mysql_router.units > 0 ? 1 : 0
+  count      = local.cos_enabled && var.router_enabled && var.mysql_router.units > 0 ? 1 : 0
 
   application {
     name     = module.mysql_router[0].app_name

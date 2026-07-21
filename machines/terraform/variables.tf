@@ -21,8 +21,8 @@ variable "tls_offer" {
   default     = null
 }
 
-variable "deploy_mysql_router" {
-  description = "Whether to deploy the MySQL Router application, alongside the server, on this same model."
+variable "router_enabled" {
+  description = "Whether to deploy the MySQL Router application."
   type        = bool
   default     = true
 }
