@@ -34,8 +34,8 @@ SCENARIOS = [
     Scenario(
         name="optional_router",
         vars={"router_enabled": "false"},
-        active_apps=["mysql", "s3-integrator"],
-        absent_apps=["mysql-router"],
+        active_apps=["mysql-k8s", "s3-integrator"],
+        absent_apps=["mysql-router-k8s"],
     ),
 ]
 
