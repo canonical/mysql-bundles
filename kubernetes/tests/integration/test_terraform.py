@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
@@ -35,7 +34,13 @@ SCENARIOS = [
             "mysql-router-k8s",
             "s3-integrator",
         ],
-    )
+    ),
+    Scenario(
+        name="optional_router",
+        vars={"router_enabled": "false"},
+        active_apps=["mysql-k8s", "s3-integrator"],
+        absent_apps=["mysql-router-k8s"],
+    ),
 ]
 
 
