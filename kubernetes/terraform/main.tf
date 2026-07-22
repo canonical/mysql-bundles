@@ -20,6 +20,7 @@ module "mysql_server" {
 }
 
 module "mysql_router" {
+  count       = var.router_enabled ? 1 : 0
   source      = "git::https://github.com/canonical/mysql-router-operators//kubernetes/terraform?ref=8.4/edge"
   model       = var.model
   app_name    = var.mysql_router.app_name
