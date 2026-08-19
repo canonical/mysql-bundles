@@ -7,7 +7,7 @@ locals {
 }
 
 module "mysql_server" {
-  source        = "git::https://github.com/canonical/mysql-operators//machines/terraform?ref=8.4/edge"
+  source        = "git::https://github.com/canonical/mysql-operators//machines/terraform?ref=sinclert/tf-storage-sizes-8.4"
   model         = var.model
   app_name      = var.mysql_server.app_name
   base          = var.mysql_server.base
