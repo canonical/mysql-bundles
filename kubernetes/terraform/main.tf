@@ -7,16 +7,16 @@ locals {
 }
 
 module "mysql_server" {
-  source       = "git::https://github.com/canonical/mysql-operators//kubernetes/terraform?ref=8.4/edge"
-  model        = var.model
-  app_name     = var.mysql_server.app_name
-  base         = var.mysql_server.base
-  channel      = var.mysql_server.channel
-  config       = var.mysql_server.config
-  constraints  = var.mysql_server.constraints
-  revision     = var.mysql_server.revision
-  units        = var.mysql_server.units
-  storage_size = var.mysql_server.storage_size
+  source        = "git::https://github.com/canonical/mysql-operators//kubernetes/terraform?ref=8.4/edge"
+  model         = var.model
+  app_name      = var.mysql_server.app_name
+  base          = var.mysql_server.base
+  channel       = var.mysql_server.channel
+  config        = var.mysql_server.config
+  constraints   = var.mysql_server.constraints
+  revision      = var.mysql_server.revision
+  units         = var.mysql_server.units
+  storage_sizes = var.mysql_server.storage_sizes
 }
 
 module "mysql_router" {

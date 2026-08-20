@@ -72,7 +72,14 @@ def get_common_vars(juju: jubilant.Juju) -> Dict[str, Any]:
     if s3_config := get_s3_config():
         common["s3_integrator"] = {"config": s3_config}
     if storage_size := os.getenv("TF_MYSQL_STORAGE_SIZE"):
-        common["mysql_server"] = {"storage_size": storage_size}
+        common["mysql_server"] = {
+            "storage_sizes": {
+                "archive": storage_size,
+                "data": storage_size,
+                "logs": storage_size,
+                "temp": storage_size,
+            },
+        }
     return common
 
 

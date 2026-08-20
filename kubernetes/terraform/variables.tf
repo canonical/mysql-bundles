@@ -33,15 +33,15 @@ variable "router_enabled" {
 variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({
-    app_name     = optional(string, "mysql-k8s")
-    base         = optional(string, "ubuntu@26.04")
-    channel      = optional(string, "8.4/edge")
-    config       = optional(map(string), {})
-    constraints  = optional(string, "arch=amd64")
-    resources    = optional(map(string), {})
-    revision     = optional(number, null)
-    units        = optional(number, 3)
-    storage_size = optional(string, "10G")
+    app_name      = optional(string, "mysql-k8s")
+    base          = optional(string, "ubuntu@26.04")
+    channel       = optional(string, "8.4/edge")
+    config        = optional(map(string), {})
+    constraints   = optional(string, "arch=amd64")
+    resources     = optional(map(string), {})
+    revision      = optional(number, null)
+    units         = optional(number, 3)
+    storage_sizes = optional(map(string), {})
   })
 
   default = {}
