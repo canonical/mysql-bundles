@@ -124,78 +124,18 @@ files = [
 
 [[package]]
 name = "jubilant"
-version = "1.11.0"
+version = "1.12.0"
 description = "Juju CLI wrapper, primarily for charm integration testing"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["integration"]
 files = [
-    {file = "jubilant-1.11.0-py3-none-any.whl", hash = "sha256:900427d616c75f1cfb6ee11212fefe9c7877111209630a87b2b2556a37d626e7"},
-    {file = "jubilant-1.11.0.tar.gz", hash = "sha256:69d13d2a0c9604a146fb7172732b9344f7aa14a35cdc29a37189831a724dc80a"},
+    {file = "jubilant-1.12.0-py3-none-any.whl", hash = "sha256:fa64922156d861149666c8ce08cb93b1fd787172fdd12175a4d0563955a67544"},
+    {file = "jubilant-1.12.0.tar.gz", hash = "sha256:7d796d5c19f0b74a041f50aa68919731c7c83da4fb8a8258c8861524532b6997"},
 ]
 
 [package.dependencies]
 PyYAML = "==6.*"
-
-[[package]]
-name = "mysql-connector-python"
-version = "9.1.0"
-description = "A self-contained Python driver for communicating with MySQL servers, using an API that is compliant with the Python Database API Specification v2.0 (PEP 249)."
-optional = false
-python-versions = ">=3.9"
-groups = ["integration"]
-files = [
-    {file = "mysql-connector-python-9.1.0.tar.gz", hash = "sha256:346261a2aeb743a39cf66ba8bde5e45931d313b76ce0946a69a6d1187ec7d279"},
-    {file = "mysql_connector_python-9.1.0-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:dcdcf380d07b9ca6f18a95e9516a6185f2ab31a53d290d5e698e77e59c043c9e"},
-    {file = "mysql_connector_python-9.1.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:948ef0c7da87901176d4320e0f40a3277ee06fe6f58ce151c1e60d8d50fdeaf4"},
-    {file = "mysql_connector_python-9.1.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:abf16fc1155ebeba5558e5702dd7210d634ac8da484eca05a640b68a548dc7cf"},
-    {file = "mysql_connector_python-9.1.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:aceaab679b852c0a2ec0eed9eb2a490171b3493484f1881b605cbf2f9c5fde6d"},
-    {file = "mysql_connector_python-9.1.0-cp310-cp310-win_amd64.whl", hash = "sha256:72dcce5f2e4f5910d65f02eb318c1e4622464da007a3ae5e9ccd64169d8efac3"},
-    {file = "mysql_connector_python-9.1.0-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:9b23a8e2acee91b5120febe00c53e7f472b9b6d49618e39fa1af86cdc1f0ade8"},
-    {file = "mysql_connector_python-9.1.0-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:e15153cb8ab5fcec00b99077de536489d22d4809fc28f633850398fef0560b1f"},
-    {file = "mysql_connector_python-9.1.0-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:fec943d333851c4b5e57cd0b04dde36e6817f0d4d62b2a58ce028a82be444866"},
-    {file = "mysql_connector_python-9.1.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:c36a9b9ebf9587aaa5d7928468fefe8faf6fc993a03cb242bb160ede9cf75b2d"},
-    {file = "mysql_connector_python-9.1.0-cp311-cp311-win_amd64.whl", hash = "sha256:7b2eb48518b8c2bc9636883d264b291e5c93824fc6b61823ca9cf396a09474ad"},
-    {file = "mysql_connector_python-9.1.0-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:f67b22e3eaf5b03ffac97232d3dd67b56abcacad907ad4391c847bad5ba58f0e"},
-    {file = "mysql_connector_python-9.1.0-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:c75f674a52b8820c90d466183b2bb59f89bcf09d17ebe9b391313d89565c8896"},
-    {file = "mysql_connector_python-9.1.0-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:e75ecb3df2c2cbe4d92d5dd58a318fa708edebc0fa2d850fc2a9d42481dbb808"},
-    {file = "mysql_connector_python-9.1.0-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:7d99c0a841a2c2a0e4d5b28376c1bfac794ec3821b66eb6fa2f7702cec820ee8"},
-    {file = "mysql_connector_python-9.1.0-cp312-cp312-win_amd64.whl", hash = "sha256:30a8f0ba84f8adf15a4877e80b3f97f786ce35616d918b9310578a2bd22952d5"},
-    {file = "mysql_connector_python-9.1.0-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:d627ebafc0327b935d8783454e7a4b5c32324ed39a2a1589239490ab850bf7d7"},
-    {file = "mysql_connector_python-9.1.0-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:e26a08a9500407fa8f4a6504f7077d1312bec4fa52cb0a58c1ad324ca1f3eeaa"},
-    {file = "mysql_connector_python-9.1.0-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:109e17a4ada1442e3881a51e2bbabcb336ad229a619ac61e9ad24bd6b9b117bd"},
-    {file = "mysql_connector_python-9.1.0-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:4f102452c64332b7e042fa37b84d4f15332bd639e479d15035f2a005fb9fbb34"},
-    {file = "mysql_connector_python-9.1.0-cp313-cp313-win_amd64.whl", hash = "sha256:25e261f3260ec798c48cb910862a299e565548a1b5421dec84315ddbc9ef28c4"},
-    {file = "mysql_connector_python-9.1.0-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:ec4386b2426bfb07f83455bf895d8a7e2d6c067343ac05be5511083ca2424991"},
-    {file = "mysql_connector_python-9.1.0-cp39-cp39-macosx_13_0_x86_64.whl", hash = "sha256:28fd99ee464ac3b02d1e2a71a63ca4f25c6110e4414a46a5b64631e6d2096899"},
-    {file = "mysql_connector_python-9.1.0-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:e2f0876e1efd76e05853cb0a623dba2746ee70686c043019d811737dd5c3d871"},
-    {file = "mysql_connector_python-9.1.0-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:6d7d5d458d0d600bbbebd9f2bce551e386b359bcce6026f7369b57922d26f13a"},
-    {file = "mysql_connector_python-9.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:c350b1aaf257b1b778f44b8bfaeda07751f55e150f5a7464342f36e4aac8e805"},
-    {file = "mysql_connector_python-9.1.0-py2.py3-none-any.whl", hash = "sha256:dacf1aa84dc7dd8ae908626c3ae50fce956d0105130c7465fd248a4f035d50b1"},
-]
-
-[package.extras]
-dns-srv = ["dnspython (==2.6.1)"]
-fido2 = ["fido2 (==1.1.2)"]
-gssapi = ["gssapi (==1.8.3)"]
-telemetry = ["opentelemetry-api (==1.18.0)", "opentelemetry-exporter-otlp-proto-http (==1.18.0)", "opentelemetry-sdk (==1.18.0)"]
-
-[[package]]
-name = "oauthlib"
-version = "3.3.1"
-description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
-optional = false
-python-versions = ">=3.8"
-groups = ["integration"]
-files = [
-    {file = "oauthlib-3.3.1-py3-none-any.whl", hash = "sha256:88119c938d2b8fb88561af5f6ee0eec8cc8d552b7bb1f712743136eb7523b7a1"},
-    {file = "oauthlib-3.3.1.tar.gz", hash = "sha256:0f0f8aa759826a193cf66c12ea1af1637f87b9b4622d46e866952bb022e538c9"},
-]
-
-[package.extras]
-rsa = ["cryptography (>=3.0.0)"]
-signals = ["blinker (>=1.4.0)"]
-signedtoken = ["cryptography (>=3.0.0)", "pyjwt (>=2.0.0,<3)"]
 
 [[package]]
 name = "packaging"
@@ -391,4 +331,62 @@ files = [
     {file = "tomli-2.4.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:1b168f2731796b045128c45982d3a4874057626da0e2ef1fdd722848b741361d"},
     {file = "tomli-2.4.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:133e93646ec4300d651839d382d63edff11d8978be23da4cc106f5a18b7d0576"},
     {file = "tomli-2.4.0-cp311-cp311-win32.whl", hash = "sha256:b6c78bdf37764092d369722d9946cb65b8767bfa4110f902a1b2542d8d173c8a"},
-    {file = "tomli-2.4.0-cp
+    {file = "tomli-2.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:d3d1654e11d724760cdb37a3d7691f0be9db5fbdaef59c9f532aabf87006dbaa"},
+    {file = "tomli-2.4.0-cp311-cp311-win_arm64.whl", hash = "sha256:cae9c19ed12d4e8f3ebf46d1a75090e4c0dc16271c5bce1c833ac168f08fb614"},
+    {file = "tomli-2.4.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:920b1de295e72887bafa3ad9f7a792f811847d57ea6b1215154030cf131f16b1"},
+    {file = "tomli-2.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7d6d9a4aee98fac3eab4952ad1d73aee87359452d1c086b5ceb43ed02ddb16b8"},
+    {file = "tomli-2.4.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:36b9d05b51e65b254ea6c2585b59d2c4cb91c8a3d91d0ed0f17591a29aaea54a"},
+    {file = "tomli-2.4.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1c8a885b370751837c029ef9bc014f27d80840e48bac415f3412e6593bbc18c1"},
+    {file = "tomli-2.4.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:8768715ffc41f0008abe25d808c20c3d990f42b6e2e58305d5da280ae7d1fa3b"},
+    {file = "tomli-2.4.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:7b438885858efd5be02a9a133caf5812b8776ee0c969fea02c45e8e3f296ba51"},
+    {file = "tomli-2.4.0-cp312-cp312-win32.whl", hash = "sha256:0408e3de5ec77cc7f81960c362543cbbd91ef883e3138e81b729fc3eea5b9729"},
+    {file = "tomli-2.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:685306e2cc7da35be4ee914fd34ab801a6acacb061b6a7abca922aaf9ad368da"},
+    {file = "tomli-2.4.0-cp312-cp312-win_arm64.whl", hash = "sha256:5aa48d7c2356055feef06a43611fc401a07337d5b006be13a30f6c58f869e3c3"},
+    {file = "tomli-2.4.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:84d081fbc252d1b6a982e1870660e7330fb8f90f676f6e78b052ad4e64714bf0"},
+    {file = "tomli-2.4.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:9a08144fa4cba33db5255f9b74f0b89888622109bd2776148f2597447f92a94e"},
+    {file = "tomli-2.4.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:c73add4bb52a206fd0c0723432db123c0c75c280cbd67174dd9d2db228ebb1b4"},
+    {file = "tomli-2.4.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1fb2945cbe303b1419e2706e711b7113da57b7db31ee378d08712d678a34e51e"},
+    {file = "tomli-2.4.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:bbb1b10aa643d973366dc2cb1ad94f99c1726a02343d43cbc011edbfac579e7c"},
+    {file = "tomli-2.4.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:4cbcb367d44a1f0c2be408758b43e1ffb5308abe0ea222897d6bfc8e8281ef2f"},
+    {file = "tomli-2.4.0-cp313-cp313-win32.whl", hash = "sha256:7d49c66a7d5e56ac959cb6fc583aff0651094ec071ba9ad43df785abc2320d86"},
+    {file = "tomli-2.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:3cf226acb51d8f1c394c1b310e0e0e61fecdd7adcb78d01e294ac297dd2e7f87"},
+    {file = "tomli-2.4.0-cp313-cp313-win_arm64.whl", hash = "sha256:d20b797a5c1ad80c516e41bc1fb0443ddb5006e9aaa7bda2d71978346aeb9132"},
+    {file = "tomli-2.4.0-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:26ab906a1eb794cd4e103691daa23d95c6919cc2fa9160000ac02370cc9dd3f6"},
+    {file = "tomli-2.4.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:20cedb4ee43278bc4f2fee6cb50daec836959aadaf948db5172e776dd3d993fc"},
+    {file = "tomli-2.4.0-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:39b0b5d1b6dd03684b3fb276407ebed7090bbec989fa55838c98560c01113b66"},
+    {file = "tomli-2.4.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:a26d7ff68dfdb9f87a016ecfd1e1c2bacbe3108f4e0f8bcd2228ef9a766c787d"},
+    {file = "tomli-2.4.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:20ffd184fb1df76a66e34bd1b36b4a4641bd2b82954befa32fe8163e79f1a702"},
+    {file = "tomli-2.4.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:75c2f8bbddf170e8effc98f5e9084a8751f8174ea6ccf4fca5398436e0320bc8"},
+    {file = "tomli-2.4.0-cp314-cp314-win32.whl", hash = "sha256:31d556d079d72db7c584c0627ff3a24c5d3fb4f730221d3444f3efb1b2514776"},
+    {file = "tomli-2.4.0-cp314-cp314-win_amd64.whl", hash = "sha256:43e685b9b2341681907759cf3a04e14d7104b3580f808cfde1dfdb60ada85475"},
+    {file = "tomli-2.4.0-cp314-cp314-win_arm64.whl", hash = "sha256:3d895d56bd3f82ddd6faaff993c275efc2ff38e52322ea264122d72729dca2b2"},
+    {file = "tomli-2.4.0-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:5b5807f3999fb66776dbce568cc9a828544244a8eb84b84b9bafc080c99597b9"},
+    {file = "tomli-2.4.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:c084ad935abe686bd9c898e62a02a19abfc9760b5a79bc29644463eaf2840cb0"},
+    {file = "tomli-2.4.0-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:0f2e3955efea4d1cfbcb87bc321e00dc08d2bcb737fd1d5e398af111d86db5df"},
+    {file = "tomli-2.4.0-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:0e0fe8a0b8312acf3a88077a0802565cb09ee34107813bba1c7cd591fa6cfc8d"},
+    {file = "tomli-2.4.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:413540dce94673591859c4c6f794dfeaa845e98bf35d72ed59636f869ef9f86f"},
+    {file = "tomli-2.4.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:0dc56fef0e2c1c470aeac5b6ca8cc7b640bb93e92d9803ddaf9ea03e198f5b0b"},
+    {file = "tomli-2.4.0-cp314-cp314t-win32.whl", hash = "sha256:d878f2a6707cc9d53a1be1414bbb419e629c3d6e67f69230217bb663e76b5087"},
+    {file = "tomli-2.4.0-cp314-cp314t-win_amd64.whl", hash = "sha256:2add28aacc7425117ff6364fe9e06a183bb0251b03f986df0e78e974047571fd"},
+    {file = "tomli-2.4.0-cp314-cp314t-win_arm64.whl", hash = "sha256:2b1e3b80e1d5e52e40e9b924ec43d81570f0e7d09d11081b797bc4692765a3d4"},
+    {file = "tomli-2.4.0-py3-none-any.whl", hash = "sha256:1f776e7d669ebceb01dee46484485f43a4048746235e683bcdffacdf1fb4785a"},
+    {file = "tomli-2.4.0.tar.gz", hash = "sha256:aa89c3f6c277dd275d8e243ad24f3b5e701491a860d5121f2cdd399fbb31fc9c"},
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.15.0"
+description = "Backported and Experimental Type Hints for Python 3.9+"
+optional = false
+python-versions = ">=3.9"
+groups = ["integration"]
+markers = "python_version == \"3.10\""
+files = [
+    {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
+    {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
+]
+
+[metadata]
+lock-version = "2.1"
+python-versions = "^3.10"
+content-hash = "c9755b612cf81a5361880af4ef7034f01a110f531dd2fa0690a76aef37f41df1"

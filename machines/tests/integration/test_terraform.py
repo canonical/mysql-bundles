@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2025 canonical Ltd.
+# Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
 """Contains integration tests for the terraform module."""
