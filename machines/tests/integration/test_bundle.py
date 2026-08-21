@@ -39,7 +39,7 @@ SCENARIOS = [
             "s3-integrator",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
     ),
     Scenario(
         name="s3-configured",
@@ -51,7 +51,7 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
     ),
     Scenario(
         name="data-integrator-configured",
@@ -68,7 +68,7 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
     ),
     Scenario(
         name="router-configured",
@@ -82,7 +82,6 @@ SCENARIOS = [
             "mysql-router",
         ],
         blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
-        waiting_apps=["mysql-test-app"],
     ),
     Scenario(
         name="test-app-unit-added",
