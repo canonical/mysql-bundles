@@ -38,6 +38,7 @@ SCENARIOS = [
             "s3-integrator",
         ],
         waiting_apps=["mysql-router-k8s"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="s3-configured",
@@ -53,6 +54,7 @@ SCENARIOS = [
             "mysql-router-data-integrator",
         ],
         waiting_apps=["mysql-router-k8s"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="data-integrator-configured",
@@ -65,6 +67,7 @@ SCENARIOS = [
         ],
         blocked_apps=["grafana-agent-k8s", "mysql-router-data-integrator"],
         waiting_apps=["mysql-router-k8s"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="router-configured",
@@ -78,6 +81,7 @@ SCENARIOS = [
             "mysql-router-k8s",
         ],
         blocked_apps=["grafana-agent-k8s"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="test-app-unit-added",
