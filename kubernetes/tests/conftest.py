@@ -17,14 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def pytest_addoption(parser):
-    """Adds command line parameter ``--model`` (see help for details)."""
-    parser.addoption(
-        "--model",
-        action="store",
-        default="testing",
-        help="model name or ':auto:' for temporary model, default to 'testing'",
-        required=False,
-    )
+    """Defines pytest parsers."""
+    parser.addoption("--bundle", action="store", help="run specific bundle")
 
 
 @pytest.fixture(scope="module")
