@@ -19,6 +19,13 @@ logger = logging.getLogger(__name__)
 def pytest_addoption(parser):
     """Defines pytest parsers."""
     parser.addoption("--bundle", action="store", help="run specific bundle")
+    parser.addoption(
+        "--model",
+        action="store",
+        default="testing",
+        help="model name or ':auto:' for temporary model, default to 'testing'",
+        required=False,
+    )
 
 
 def pytest_generate_tests(metafunc):

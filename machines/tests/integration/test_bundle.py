@@ -7,131 +7,156 @@
 import itertools
 import logging
 
-import pytest
-from pytest_operator.plugin import OpsTest
+import jubilant
 
 from .connector import MysqlConnector
 from .helpers import (
-    get_app_statuses,
+    Scenario,
+    _apps_match,
+    _statuses_match,
     get_credentials,
-    get_leader_unit,
-    get_unit_ip,
+    get_leader_unit_name,
+    get_unit_address,
 )
 
 logger = logging.getLogger(__name__)
 
-waiting_apps = [
-    "mysql-router",
-]
-active_apps = [
-    "mysql",
-    "self-signed-certificates",
-    "sysbench",
-]
-blocked_apps = [
-    "data-integrator",
-    "grafana-agent",
-    "mysql-router-data-integrator",
-    "landscape-client",
-    "s3-integrator",
-    "ubuntu-advantage",
-]
-
 TIMEOUT = 20 * 60
 SHORT_TIMEOUT = 5 * 60
 
+# Each scenario represents a checkpoint in the bundle test progression.
+# The bundle deploys all apps at once; subsequent scenarios reflect
+# configuration changes that move apps from blocked/waiting to active.
+SCENARIOS = [
+    Scenario(
+        name="deployed",
+        active_apps=["mysql", "self-signed-certificates", "sysbench"],
+        blocked_apps=[
+            "data-integrator",
+            "grafana-agent",
+            "mysql-router-data-integrator",
+            "landscape-client",
+            "s3-integrator",
+            "ubuntu-advantage",
+        ],
+        waiting_apps=["mysql-router", "mysql-test-app"],
+    ),
+    Scenario(
+        name="s3-configured",
+        active_apps=["mysql", "self-signed-certificates", "sysbench", "s3-integrator"],
+        blocked_apps=[
+            "data-integrator",
+            "grafana-agent",
+            "mysql-router-data-integrator",
+            "landscape-client",
+            "ubuntu-advantage",
+        ],
+        waiting_apps=["mysql-router", "mysql-test-app"],
+    ),
+    Scenario(
+        name="data-integrator-configured",
+        active_apps=[
+            "mysql",
+            "self-signed-certificates",
+            "sysbench",
+            "s3-integrator",
+            "data-integrator",
+        ],
+        blocked_apps=[
+            "grafana-agent",
+            "mysql-router-data-integrator",
+            "landscape-client",
+            "ubuntu-advantage",
+        ],
+        waiting_apps=["mysql-router", "mysql-test-app"],
+    ),
+    Scenario(
+        name="router-configured",
+        active_apps=[
+            "mysql",
+            "self-signed-certificates",
+            "sysbench",
+            "s3-integrator",
+            "data-integrator",
+            "mysql-router-data-integrator",
+            "mysql-router",
+        ],
+        blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
+        waiting_apps=["mysql-test-app"],
+    ),
+    Scenario(
+        name="test-app-unit-added",
+        active_apps=[
+            "mysql",
+            "self-signed-certificates",
+            "sysbench",
+            "s3-integrator",
+            "data-integrator",
+            "mysql-router-data-integrator",
+            "mysql-router",
+        ],
+        blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
+        waiting_apps=["mysql-test-app"],
+    ),
+]
 
-async def ensure_statuses(ops_test: OpsTest) -> None:
-    """Ensure expected statuses of applications."""
-    logger.info(f"Waiting for active: {', '.join(active_apps)}")
-    await ops_test.model.block_until(
-        lambda: get_app_statuses(ops_test, active_apps) == {"active"},
-        timeout=TIMEOUT,
+
+def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT) -> None:
+    """Wait for the model to match the given scenario."""
+    logger.info(f"Waiting for scenario '{scenario.name}'")
+    juju.wait(
+        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
+        timeout=timeout,
+        error=jubilant.any_error,
     )
 
-    logger.info(f"Waiting for blocked: {', '.join(blocked_apps)}")
-    await ops_test.model.block_until(
-        lambda: get_app_statuses(ops_test, blocked_apps) == {"blocked"},
-        timeout=SHORT_TIMEOUT,
-    )
 
-    if waiting_apps:
-        logger.info(f"Waiting for waiting: {', '.join(waiting_apps)}")
-        await ops_test.model.block_until(
-            lambda: get_app_statuses(ops_test, waiting_apps) == {"waiting"},
-            timeout=SHORT_TIMEOUT,
-        )
-
-
-@pytest.mark.abort_on_fail
-async def test_bundle(ops_test: OpsTest) -> None:
+def test_bundle(juju: jubilant.Juju) -> None:
     """Deploy bundle with app."""
-    async with ops_test.fast_forward("5s"):
-        logger.info("Deploying bundle")
-        await ops_test.model.deploy("./releases/latest/mysql-bundle.yaml")
-        await ops_test.model.applications["mysql"].set_config({"profile": "testing"})
-        await ensure_statuses(ops_test)
+    logger.info("Deploying bundle")
+    juju.deploy("./releases/latest/mysql-bundle.yaml")
+    juju.config("mysql", {"profile": "testing"})
+    _wait_for(juju, SCENARIOS[0])
 
-        logger.info("Configuring s3-integrator credentials")
-        await (
-            ops_test.model.applications["s3-integrator"]
-            .units[0]
-            .run_action(
-                action_name="sync-s3-credentials",
-                **{"access-key": "access", "secret-key": "secret"},
-            )
-        )
+    logger.info("Configuring s3-integrator credentials")
+    juju.run(
+        "s3-integrator/0",
+        "sync-s3-credentials",
+        {"access-key": "access", "secret-key": "secret"},
+    )
+    _wait_for(juju, SCENARIOS[1], timeout=SHORT_TIMEOUT)
 
-        blocked_apps.remove("s3-integrator")
-        active_apps.append("s3-integrator")
-        await ensure_statuses(ops_test)
+    logger.info("Configuring data-integrator")
+    juju.config("data-integrator", {"database-name": "mysql-database"})
+    _wait_for(juju, SCENARIOS[2], timeout=SHORT_TIMEOUT)
 
-        logger.info("Configuring data-integrator")
-        await ops_test.model.applications["data-integrator"].set_config({
-            "database-name": "mysql-database"
-        })
+    logger.info("Confirming data-integrator's database exists")
+    mysql_leader = get_leader_unit_name(juju, "mysql")
+    mysql_leader_address = get_unit_address(juju, mysql_leader)
+    server_config_credentials = get_credentials(juju, mysql_leader, "serverconfig")
 
-        blocked_apps.remove("data-integrator")
-        active_apps.append("data-integrator")
-        await ensure_statuses(ops_test)
+    database_config = {
+        "user": server_config_credentials["username"],
+        "password": server_config_credentials["password"],
+        "host": mysql_leader_address,
+        "raise_on_warnings": False,
+    }
 
-        logger.info("Confirming data-integrator's database exists")
-        mysql_leader = await get_leader_unit(ops_test, "mysql")
-        mysql_leader_address = await get_unit_ip(ops_test, mysql_leader.name)
-        server_config_credentials = await get_credentials(mysql_leader, "serverconfig")
+    with MysqlConnector(database_config, False) as cursor:
+        cursor.execute("SHOW DATABASES;")
+        databases = list(itertools.chain(*cursor.fetchall()))
+        assert "mysql-database" in databases
 
-        database_config = {
-            "user": server_config_credentials["username"],
-            "password": server_config_credentials["password"],
-            "host": mysql_leader_address,
-            "raise_on_warnings": False,
-        }
+    logger.info("Configuring mysql-router-data-integrator")
+    juju.config("mysql-router-data-integrator", {"database-name": "mysql-router-database"})
+    _wait_for(juju, SCENARIOS[3], timeout=SHORT_TIMEOUT)
 
-        with MysqlConnector(database_config, False) as cursor:
-            cursor.execute("SHOW DATABASES;")
-            databases = list(itertools.chain(*cursor.fetchall()))
-            assert "mysql-database" in databases
+    logger.info("Confirming mysql-router-data-integrator's database exists")
+    with MysqlConnector(database_config, False) as cursor:
+        cursor.execute("SHOW DATABASES;")
+        databases = list(itertools.chain(*cursor.fetchall()))
+        assert "mysql-router-database" in databases
 
-        logger.info("Configuring mysql-router-data-integrator")
-        await ops_test.model.applications["mysql-router-data-integrator"].set_config({
-            "database-name": "mysql-router-database"
-        })
-
-        blocked_apps.remove("mysql-router-data-integrator")
-        active_apps.append("mysql-router-data-integrator")
-
-        waiting_apps.remove("mysql-router")
-        active_apps.append("mysql-router")
-        await ensure_statuses(ops_test)
-
-        logger.info("Confirming data-integrator's database exists")
-        with MysqlConnector(database_config, False) as cursor:
-            cursor.execute("SHOW DATABASES;")
-            databases = list(itertools.chain(*cursor.fetchall()))
-            assert "mysql-router-database" in databases
-
-        logger.info("Adding mysql-test-app unit")
-        await ops_test.model.applications["mysql-test-app"].add_unit()
-
-        waiting_apps.append("mysql-test-app")
-        await ensure_statuses(ops_test)
+    logger.info("Adding mysql-test-app unit")
+    juju.add_unit("mysql-test-app")
+    _wait_for(juju, SCENARIOS[4], timeout=SHORT_TIMEOUT)

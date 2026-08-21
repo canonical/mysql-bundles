@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 SCENARIOS = [
     Scenario(
         name="default",
-        active_apps=["mysql-k8s", "s3-integrator"],
-        blocked_apps=["mysql-router-k8s"],
+        active_apps=["mysql-k8s"],
+        blocked_apps=["mysql-router-k8s", "s3-integrator"],
     )
 ]
 

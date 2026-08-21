@@ -28,12 +28,13 @@ APPLY_TIMEOUT = 10 * 60
 
 @dataclass
 class Scenario:
-    """A terraform deploy scenario and its expected model state."""
+    """A deploy scenario and its expected model state."""
 
     name: str
     vars: Dict[str, Any] = field(default_factory=dict)
     active_apps: List[str] = field(default_factory=list)
     blocked_apps: List[str] = field(default_factory=list)
+    waiting_apps: List[str] = field(default_factory=list)
     unknown_apps: List[str] = field(default_factory=list)
     absent_apps: List[str] = field(default_factory=list)
 
@@ -126,6 +127,7 @@ def _apps_match(status: jubilant.Status, scenario: Scenario) -> bool:
     present_apps = {
         *scenario.active_apps,
         *scenario.blocked_apps,
+        *scenario.waiting_apps,
         *scenario.unknown_apps,
     }
     if set(status.apps) != present_apps:
@@ -144,7 +146,46 @@ def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
     for app in scenario.blocked_apps:
         if status.apps[app].app_status.current != "blocked":
             return False
+    for app in scenario.waiting_apps:
+        if status.apps[app].app_status.current != "waiting":
+            return False
     for app in scenario.unknown_apps:
         if status.apps[app].app_status.current != "unknown":
             return False
     return True
+
+
+def get_leader_unit_name(juju: jubilant.Juju, app: str) -> str:
+    """Get the name of the leader unit of the given application.
+
+    Args:
+        juju: The Juju instance.
+        app: The name of the application.
+    """
+    status = juju.status()
+    for unit_name, unit in status.apps[app].units.items():
+        if unit.leader:
+            return unit_name
+    raise RuntimeError(f"No leader unit found for application {app!r}")
+
+
+def get_unit_address(juju: jubilant.Juju, unit: str) -> str:
+    """Get the public address of the given unit.
+
+    Args:
+        juju: The Juju instance.
+        unit: The unit name, for example ``mysql/0``.
+    """
+    return juju.show_unit(unit).public_address
+
+
+def get_credentials(juju: jubilant.Juju, unit: str, username: str) -> Dict[str, Any]:
+    """Run the ``get-password`` action and return credentials for the given username.
+
+    Args:
+        juju: The Juju instance.
+        unit: The unit name to run the action on, for example ``mysql/0``.
+        username: The username to get credentials for, for example ``serverconfig``.
+    """
+    task = juju.run(unit, "get-password", {"username": username})
+    return task.results
