@@ -27,6 +27,7 @@ def pytest_addoption(parser):
         required=False,
     )
 
+
 @pytest.fixture(scope="module")
 def arch() -> str:
     """Return the platform architecture."""
