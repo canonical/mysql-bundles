@@ -67,7 +67,7 @@ def get_common_vars(juju: jubilant.Juju) -> Dict[str, Any]:
     """Build the terraform vars shared across all scenarios."""
     common: Dict[str, Any] = {
         "model": get_model_uuid(juju),
-        "s3_integrator_credentials": get_s3_credentials(),
+        # "s3_integrator_credentials": get_s3_credentials(),
     }
     if s3_config := get_s3_config():
         common["s3_integrator"] = {"config": s3_config}
