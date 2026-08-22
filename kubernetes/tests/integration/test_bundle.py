@@ -21,7 +21,7 @@ from .helpers import (
 
 logger = logging.getLogger(__name__)
 
-TIMEOUT = 30 * 60
+TIMEOUT = 20 * 60
 SHORT_TIMEOUT = 5 * 60
 
 # Each scenario represents a checkpoint in the bundle test progression.
