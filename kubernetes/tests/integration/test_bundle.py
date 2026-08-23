@@ -22,7 +22,6 @@ from .helpers import (
 logger = logging.getLogger(__name__)
 
 TIMEOUT = 20 * 60
-SHORT_TIMEOUT = 5 * 60
 
 # Each scenario represents a checkpoint in the bundle test progression.
 # The bundle deploys all apps at once; subsequent scenarios reflect
@@ -106,6 +105,7 @@ def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT)
     juju.wait(
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         timeout=timeout,
+        successes=1,
     )
 
 
@@ -122,11 +122,11 @@ def test_smoke(juju: jubilant.Juju) -> None:
         "sync-s3-credentials",
         {"access-key": "access", "secret-key": "secret"},
     )
-    _wait_for(juju, SCENARIOS[1], timeout=SHORT_TIMEOUT)
+    _wait_for(juju, SCENARIOS[1])
 
     logger.info("Configuring data-integrator")
     juju.config("data-integrator", {"database-name": "mysql-database"})
-    _wait_for(juju, SCENARIOS[2], timeout=SHORT_TIMEOUT)
+    _wait_for(juju, SCENARIOS[2])
 
     logger.info("Confirming data-integrator's database exists")
     mysql_leader = get_leader_unit_name(juju, "mysql-k8s")
@@ -147,7 +147,7 @@ def test_smoke(juju: jubilant.Juju) -> None:
 
     logger.info("Configuring mysql-router-data-integrator")
     juju.config("mysql-router-data-integrator", {"database-name": "mysql-router-database"})
-    _wait_for(juju, SCENARIOS[3], timeout=SHORT_TIMEOUT)
+    _wait_for(juju, SCENARIOS[3])
 
     logger.info("Confirming mysql-router-data-integrator's database exists")
     with MysqlConnector(database_config, False) as cursor:
@@ -157,4 +157,4 @@ def test_smoke(juju: jubilant.Juju) -> None:
 
     logger.info("Adding mysql-test-app unit")
     juju.add_unit("mysql-test-app")
-    _wait_for(juju, SCENARIOS[4], timeout=SHORT_TIMEOUT)
+    _wait_for(juju, SCENARIOS[4])

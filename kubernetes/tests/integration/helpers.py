@@ -176,8 +176,10 @@ def get_unit_address(juju: jubilant.Juju, unit: str) -> str:
         juju: The Juju instance.
         unit: The unit name, for example ``mysql/0``.
     """
-    unit_info = juju.show_unit(unit)
-    return unit_info.address
+    app = unit.split("/")[0]
+    status = juju.status()
+    unit_status = status.apps[app].units[unit]
+    return unit_status.address
 
 
 def get_credentials(juju: jubilant.Juju, unit: str, username: str) -> Dict[str, Any]:
