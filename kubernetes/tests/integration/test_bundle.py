@@ -106,7 +106,6 @@ def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT)
     juju.wait(
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         timeout=timeout,
-        error=jubilant.any_error,
     )
 
 

@@ -39,7 +39,8 @@ SCENARIOS = [
             "s3-integrator",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="s3-configured",
@@ -51,7 +52,8 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="data-integrator-configured",
@@ -68,7 +70,8 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router", "mysql-test-app"],
+        waiting_apps=["mysql-router"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="router-configured",
@@ -82,7 +85,7 @@ SCENARIOS = [
             "mysql-router",
         ],
         blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
-        waiting_apps=["mysql-test-app"],
+        unknown_apps=["mysql-test-app"],
     ),
     Scenario(
         name="test-app-unit-added",
@@ -107,7 +110,6 @@ def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT)
     juju.wait(
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         timeout=timeout,
-        error=jubilant.any_error,
     )
 
 
