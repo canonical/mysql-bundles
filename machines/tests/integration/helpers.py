@@ -170,16 +170,18 @@ def get_leader_unit_name(juju: jubilant.Juju, app: str) -> str:
 
 
 def get_unit_address(juju: jubilant.Juju, unit: str) -> str:
-    """Get the public address of the given unit.
+    """Get the IP address of the given unit via SSH.
 
     Args:
         juju: The Juju instance.
         unit: The unit name, for example ``mysql/0``.
     """
-    app = unit.split("/")[0]
-    status = juju.status()
-    unit_status = status.apps[app].units[unit]
-    return unit_status.address
+    stdout = juju.ssh(unit, "ip route")
+    for line in stdout.split("\n"):
+        items = line.split()
+        if items and items[0] == "default":
+            return items[8]
+    raise RuntimeError("Unable to find the default entry in output of 'ip route'")
 
 
 def get_credentials(juju: jubilant.Juju, unit: str, username: str) -> Dict[str, Any]:
