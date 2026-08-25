@@ -183,12 +183,6 @@ def get_unit_address(juju: jubilant.Juju, app_name: str, unit_name: str) -> str:
             return status.public_address
 
     raise Exception("No application unit found")
-    # stdout = juju.ssh(unit, "ip route")
-    # for line in stdout.split("\n"):
-    #     items = line.split()
-    #     if items and items[0] == "default":
-    #         return items[8]
-    # raise RuntimeError("Unable to find the default entry in output of 'ip route'")
 
 
 def get_credentials(juju: jubilant.Juju, unit: str, username: str) -> Dict[str, Any]:
