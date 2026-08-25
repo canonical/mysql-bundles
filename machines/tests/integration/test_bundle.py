@@ -29,7 +29,11 @@ TIMEOUT = 20 * 60
 SCENARIOS = [
     Scenario(
         name="deployed",
-        active_apps=["mysql", "self-signed-certificates", "sysbench"],
+        active_apps=[
+            "mysql",
+            "self-signed-certificates",
+            "sysbench",
+        ],
         blocked_apps=[
             "data-integrator",
             "grafana-agent",
@@ -38,12 +42,21 @@ SCENARIOS = [
             "s3-integrator",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router"],
-        unknown_apps=["mysql-test-app"],
+        waiting_apps=[
+            "mysql-router",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="s3-configured",
-        active_apps=["mysql", "self-signed-certificates", "sysbench", "s3-integrator"],
+        active_apps=[
+            "mysql",
+            "self-signed-certificates",
+            "sysbench",
+            "s3-integrator",
+        ],
         blocked_apps=[
             "data-integrator",
             "grafana-agent",
@@ -51,8 +64,12 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router"],
-        unknown_apps=["mysql-test-app"],
+        waiting_apps=[
+            "mysql-router",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="data-integrator-configured",
@@ -69,8 +86,12 @@ SCENARIOS = [
             "landscape-client",
             "ubuntu-advantage",
         ],
-        waiting_apps=["mysql-router"],
-        unknown_apps=["mysql-test-app"],
+        waiting_apps=[
+            "mysql-router",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="router-configured",
@@ -83,8 +104,14 @@ SCENARIOS = [
             "mysql-router-data-integrator",
             "mysql-router",
         ],
-        blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
-        unknown_apps=["mysql-test-app"],
+        blocked_apps=[
+            "grafana-agent",
+            "landscape-client",
+            "ubuntu-advantage",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="test-app-unit-added",
@@ -97,8 +124,14 @@ SCENARIOS = [
             "mysql-router-data-integrator",
             "mysql-router",
         ],
-        blocked_apps=["grafana-agent", "landscape-client", "ubuntu-advantage"],
-        waiting_apps=["mysql-test-app"],
+        blocked_apps=[
+            "grafana-agent",
+            "landscape-client",
+            "ubuntu-advantage",
+        ],
+        waiting_apps=[
+            "mysql-test-app",
+        ],
     ),
 ]
 
@@ -109,7 +142,6 @@ def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT)
     juju.wait(
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         timeout=timeout,
-        successes=1,
     )
 
 
@@ -134,7 +166,7 @@ def test_bundle(juju: jubilant.Juju) -> None:
 
     logger.info("Confirming data-integrator's database exists")
     mysql_leader = get_leader_unit_name(juju, "mysql")
-    mysql_leader_address = get_unit_address(juju, mysql_leader)
+    mysql_leader_address = get_unit_address(juju, "mysql", mysql_leader)
     server_config_credentials = get_credentials(juju, mysql_leader, "serverconfig")
 
     database_config = {

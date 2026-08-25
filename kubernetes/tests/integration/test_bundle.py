@@ -29,15 +29,23 @@ TIMEOUT = 20 * 60
 SCENARIOS = [
     Scenario(
         name="deployed",
-        active_apps=["mysql-k8s", "self-signed-certificates", "sysbench"],
+        active_apps=[
+            "mysql-k8s",
+            "self-signed-certificates",
+            "sysbench",
+        ],
         blocked_apps=[
             "data-integrator",
             "grafana-agent-k8s",
             "mysql-router-data-integrator",
             "s3-integrator",
         ],
-        waiting_apps=["mysql-router-k8s"],
-        unknown_apps=["mysql-test-app"],
+        waiting_apps=[
+            "mysql-router-k8s",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="s3-configured",
@@ -52,8 +60,12 @@ SCENARIOS = [
             "grafana-agent-k8s",
             "mysql-router-data-integrator",
         ],
-        waiting_apps=["mysql-router-k8s"],
-        unknown_apps=["mysql-test-app"],
+        waiting_apps=[
+            "mysql-router-k8s",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="data-integrator-configured",
@@ -64,9 +76,16 @@ SCENARIOS = [
             "s3-integrator",
             "data-integrator",
         ],
-        blocked_apps=["grafana-agent-k8s", "mysql-router-data-integrator"],
-        waiting_apps=["mysql-router-k8s"],
-        unknown_apps=["mysql-test-app"],
+        blocked_apps=[
+            "grafana-agent-k8s",
+            "mysql-router-data-integrator",
+        ],
+        waiting_apps=[
+            "mysql-router-k8s",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="router-configured",
@@ -79,8 +98,12 @@ SCENARIOS = [
             "mysql-router-data-integrator",
             "mysql-router-k8s",
         ],
-        blocked_apps=["grafana-agent-k8s"],
-        unknown_apps=["mysql-test-app"],
+        blocked_apps=[
+            "grafana-agent-k8s",
+        ],
+        unknown_apps=[
+            "mysql-test-app",
+        ],
     ),
     Scenario(
         name="test-app-unit-added",
@@ -93,8 +116,12 @@ SCENARIOS = [
             "mysql-router-data-integrator",
             "mysql-router-k8s",
         ],
-        blocked_apps=["grafana-agent-k8s"],
-        waiting_apps=["mysql-test-app"],
+        blocked_apps=[
+            "grafana-agent-k8s",
+        ],
+        waiting_apps=[
+            "mysql-test-app",
+        ],
     ),
 ]
 
@@ -105,7 +132,6 @@ def _wait_for(juju: jubilant.Juju, scenario: Scenario, timeout: float = TIMEOUT)
     juju.wait(
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         timeout=timeout,
-        successes=1,
     )
 
 

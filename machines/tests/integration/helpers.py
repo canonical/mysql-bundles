@@ -68,7 +68,6 @@ def get_common_vars(juju: jubilant.Juju) -> Dict[str, Any]:
     """Build the terraform vars shared across all scenarios."""
     common: Dict[str, Any] = {
         "model": get_model_uuid(juju),
-        # "s3_integrator_credentials": get_s3_credentials(),
     }
     if s3_config := get_s3_config():
         common["s3_integrator"] = {"config": s3_config}
@@ -169,19 +168,27 @@ def get_leader_unit_name(juju: jubilant.Juju, app: str) -> str:
     raise RuntimeError(f"No leader unit found for application {app!r}")
 
 
-def get_unit_address(juju: jubilant.Juju, unit: str) -> str:
+def get_unit_address(juju: jubilant.Juju, app_name: str, unit_name: str) -> str:
     """Get the IP address of the given unit via SSH.
 
     Args:
         juju: The Juju instance.
-        unit: The unit name, for example ``mysql/0``.
+        app_name: The app name, for example ``mysql``.
+        unit_name: The unit name, for example ``mysql/0``.
     """
-    stdout = juju.ssh(unit, "ip route")
-    for line in stdout.split("\n"):
-        items = line.split()
-        if items and items[0] == "default":
-            return items[8]
-    raise RuntimeError("Unable to find the default entry in output of 'ip route'")
+    model_status = juju.status()
+    app_status = model_status.apps[app_name]
+    for name, status in app_status.units.items():
+        if name == unit_name:
+            return status.public_address
+
+    raise Exception("No application unit found")
+    # stdout = juju.ssh(unit, "ip route")
+    # for line in stdout.split("\n"):
+    #     items = line.split()
+    #     if items and items[0] == "default":
+    #         return items[8]
+    # raise RuntimeError("Unable to find the default entry in output of 'ip route'")
 
 
 def get_credentials(juju: jubilant.Juju, unit: str, username: str) -> Dict[str, Any]:
