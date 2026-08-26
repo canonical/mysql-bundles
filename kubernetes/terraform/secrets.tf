@@ -3,6 +3,7 @@
 
 
 resource "juju_secret" "s3_integrator_credentials" {
+  count      = local.s3_integrator_enabled ? 1 : 0
   model_uuid = var.model
   name       = "s3-credentials"
 
@@ -13,11 +14,12 @@ resource "juju_secret" "s3_integrator_credentials" {
 }
 
 resource "juju_access_secret" "s3_integrator_credentials" {
+  count      = local.s3_integrator_enabled ? 1 : 0
   model_uuid = var.model
 
   applications = [
-    juju_application.s3_integrator.name,
+    juju_application.s3_integrator[0].name,
   ]
 
-  secret_id = juju_secret.s3_integrator_credentials.secret_id
+  secret_id = juju_secret.s3_integrator_credentials[0].secret_id
 }

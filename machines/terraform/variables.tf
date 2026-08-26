@@ -102,6 +102,12 @@ variable "observability" {
   }
 }
 
+variable "deploy_s3_integrator" {
+  description = "Whether to deploy the S3 integrator application and its credentials secret. Set to false to skip deploying it (useful for local testing)."
+  type        = bool
+  default     = true
+}
+
 variable "s3_integrator" {
   description = "Defines the S3 integrator application configuration"
   type = object({
@@ -129,4 +135,6 @@ variable "s3_integrator_credentials" {
     access_key = optional(string, "")
     secret_key = optional(string, "")
   })
+
+  default = {}
 }

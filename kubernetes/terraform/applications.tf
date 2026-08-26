@@ -37,6 +37,8 @@ resource "juju_application" "observability" {
 }
 
 resource "juju_application" "s3_integrator" {
+  count = local.s3_integrator_enabled ? 1 : 0
+
   charm {
     name     = "s3-integrator"
     base     = var.s3_integrator.base
@@ -50,6 +52,6 @@ resource "juju_application" "s3_integrator" {
   units       = var.s3_integrator.units
 
   config = merge(
-    var.s3_integrator.config, { "credentials" = "secret:${juju_secret.s3_integrator_credentials.secret_id}" },
+    var.s3_integrator.config, { "credentials" = "secret:${juju_secret.s3_integrator_credentials[0].secret_id}" },
   )
 }

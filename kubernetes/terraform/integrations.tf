@@ -21,13 +21,14 @@ resource "juju_integration" "mysql_server_router" {
 
 resource "juju_integration" "mysql_server_s3_integrator" {
   model_uuid = var.model
+  count      = local.s3_integrator_enabled ? 1 : 0
 
   application {
     name     = module.mysql_server.app_name
     endpoint = module.mysql_server.requires.s3_parameters
   }
   application {
-    name     = juju_application.s3_integrator.name
+    name     = juju_application.s3_integrator[0].name
     endpoint = "s3-credentials"
   }
 }

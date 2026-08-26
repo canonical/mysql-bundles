@@ -2,8 +2,9 @@
 # See LICENSE file for licensing details.
 
 locals {
-  cos_enabled = var.cos_offers.dashboard != null ? true : false
-  tls_enabled = var.tls_offer != null ? true : false
+  cos_enabled           = var.cos_offers.dashboard != null ? true : false
+  tls_enabled           = var.tls_offer != null ? true : false
+  s3_integrator_enabled = var.deploy_s3_integrator
 }
 
 module "mysql_server" {
