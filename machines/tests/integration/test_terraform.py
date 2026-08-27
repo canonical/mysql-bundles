@@ -14,6 +14,7 @@ from .helpers import (
     TF_BINARY,
     Scenario,
     _apps_match,
+    _offers_match,
     _statuses_match,
     clean_terraform_state,
     get_common_vars,
@@ -30,12 +31,14 @@ SCENARIOS = [
         name="default",
         active_apps=["mysql", "s3-integrator"],
         unknown_apps=["mysql-router"],
+        offers={"mysql_database_offer": "mysql-router"},
     ),
     Scenario(
         name="optional_router",
         vars={"router_enabled": "false"},
         active_apps=["mysql", "s3-integrator"],
         absent_apps=["mysql-router"],
+        offers={"mysql_database_offer": "mysql"},
     ),
 ]
 
@@ -69,3 +72,5 @@ def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
         lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
         error=jubilant.any_error,
     )
+
+    assert _offers_match(juju, scenario), f"offers do not match scenario '{scenario.name}'"
