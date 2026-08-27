@@ -168,11 +168,8 @@ def _offers_match(juju: jubilant.Juju, scenario: Scenario) -> bool:
     if not scenario.offers:
         return True
 
-    offers = json.loads(juju.cli("show-offers", "--format", "json", include_model=False))
-    available = {
-        name: details.get("Application") or details.get("application-name")
-        for name, details in offers.items()
-    }
+    offers = json.loads(juju.cli("offers", "--format", "json", include_model=False))
+    available = {name: details.get("application") for name, details in offers.items()}
     for offer_name, app_name in scenario.offers.items():
         if offer_name not in available:
             return False
