@@ -3,7 +3,7 @@
 
 resource "juju_offer" "mysql_database_offer" {
   model_uuid = var.model
-  name       = "mysql_database_offer"
+  name       = "mysql-database-offer"
 
   application_name = var.router_enabled ? module.mysql_router[0].app_name : module.mysql_server.app_name
   endpoints = [

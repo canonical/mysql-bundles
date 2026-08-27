@@ -31,14 +31,14 @@ SCENARIOS = [
         name="default",
         active_apps=["mysql", "s3-integrator"],
         unknown_apps=["mysql-router"],
-        offers={"mysql_database_offer": "mysql-router"},
+        offers={"mysql-database-offer": "mysql-router"},
     ),
     Scenario(
         name="optional_router",
         vars={"router_enabled": "false"},
         active_apps=["mysql", "s3-integrator"],
         absent_apps=["mysql-router"],
-        offers={"mysql_database_offer": "mysql"},
+        offers={"mysql-database-offer": "mysql"},
     ),
 ]
 
