@@ -21,6 +21,12 @@ variable "tls_offer" {
   default     = null
 }
 
+variable "router_enabled" {
+  description = "Whether to deploy the MySQL Router application."
+  type        = bool
+  default     = true
+}
+
 variable "mysql_server" {
   description = "Defines the MySQL Server application configuration"
   type = object({

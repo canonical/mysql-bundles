@@ -28,7 +28,7 @@ APPLY_TIMEOUT = 10 * 60
 
 @dataclass
 class Scenario:
-    """A deploy scenario and its expected model state."""
+    """A deployment scenario and its expected model state."""
 
     name: str
     vars: Dict[str, Any] = field(default_factory=dict)

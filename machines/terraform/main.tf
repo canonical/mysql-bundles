@@ -19,6 +19,7 @@ module "mysql_server" {
 }
 
 module "mysql_router" {
+  count       = var.router_enabled ? 1 : 0
   source      = "git::https://github.com/canonical/mysql-router-operators//machines/terraform?ref=dpe"
   model       = var.model
   app_name    = var.mysql_router.app_name
@@ -29,3 +30,4 @@ module "mysql_router" {
   revision    = var.mysql_router.revision
   units       = var.mysql_router.units
 }
+
