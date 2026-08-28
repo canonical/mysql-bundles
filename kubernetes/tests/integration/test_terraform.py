@@ -69,8 +69,8 @@ def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
     terraform_apply({**get_common_vars(juju), **scenario.vars})
 
     juju.wait(
-        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
+        lambda status: _apps_match(status, scenario)
+        and _statuses_match(status, scenario)
+        and _offers_match(status, scenario),
         error=jubilant.any_error,
     )
-
-    assert _offers_match(juju, scenario), f"offers do not match scenario '{scenario.name}'"

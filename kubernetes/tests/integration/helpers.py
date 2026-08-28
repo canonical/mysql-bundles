@@ -159,7 +159,7 @@ def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
     return True
 
 
-def _offers_match(juju: jubilant.Juju, scenario: Scenario) -> bool:
+def _offers_match(status: jubilant.Status, scenario: Scenario) -> bool:
     """Check that the expected juju offers exist in the model.
 
     Each entry in ``scenario.offers`` maps an offer name to the application
@@ -168,8 +168,7 @@ def _offers_match(juju: jubilant.Juju, scenario: Scenario) -> bool:
     if not scenario.offers:
         return True
 
-    offers = json.loads(juju.cli("offers", "--format", "json", include_model=False))
-    available = {name: details.get("application") for name, details in offers.items()}
+    available = {name: offer.app for name, offer in status.offers.items()}
     for offer_name, app_name in scenario.offers.items():
         if offer_name not in available:
             return False
