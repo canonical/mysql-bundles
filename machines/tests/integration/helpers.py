@@ -15,6 +15,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Mapping,
 )
 
 import jubilant
@@ -36,6 +37,7 @@ class Scenario:
     blocked_apps: List[str] = field(default_factory=list)
     unknown_apps: List[str] = field(default_factory=list)
     absent_apps: List[str] = field(default_factory=list)
+    offers: Mapping[str, str] = field(default_factory=dict)
 
 
 def get_model_uuid(juju: jubilant.Juju) -> str:
@@ -153,5 +155,23 @@ def _statuses_match(status: jubilant.Status, scenario: Scenario) -> bool:
             return False
     for app in scenario.unknown_apps:
         if status.apps[app].app_status.current != "unknown":
+            return False
+    return True
+
+
+def _offers_match(status: jubilant.Status, scenario: Scenario) -> bool:
+    """Check that the expected juju offers exist in the model.
+
+    Each entry in ``scenario.offers`` maps an offer name to the application
+    name the offer is expected to expose.
+    """
+    if not scenario.offers:
+        return True
+
+    available = {name: offer.app for name, offer in status.offers.items()}
+    for offer_name, app_name in scenario.offers.items():
+        if offer_name not in available:
+            return False
+        if app_name is not None and available[offer_name] != app_name:
             return False
     return True
