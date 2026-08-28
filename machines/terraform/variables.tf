@@ -32,7 +32,7 @@ variable "mysql_server" {
   type = object({
     app_name      = optional(string, "mysql")
     base          = optional(string, "ubuntu@26.04")
-    channel       = optional(string, "8.4/edge")
+    channel       = optional(string, "8.4/stable")
     config        = optional(map(string), {})
     constraints   = optional(string, "arch=amd64")
     resources     = optional(map(string), {})
@@ -49,7 +49,7 @@ variable "mysql_router" {
   type = object({
     app_name    = optional(string, "mysql-router")
     base        = optional(string, "ubuntu@26.04")
-    channel     = optional(string, "8.4/edge")
+    channel     = optional(string, "8.4/stable")
     config      = optional(map(string), {})
     constraints = optional(string, "")
     resources   = optional(map(string), {})
