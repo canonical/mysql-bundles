@@ -37,7 +37,20 @@ SCENARIOS = [
         blocked_apps=[
             "s3-integrator",
         ],
-    )
+    ),
+    Scenario(
+        name="optional_router",
+        vars={"router_enabled": "false"},
+        active_apps=[
+            "mysql",
+        ],
+        blocked_apps=[
+            "s3-integrator",
+        ],
+        absent_apps=[
+            "mysql-router",
+        ],
+    ),
 ]
 
 
