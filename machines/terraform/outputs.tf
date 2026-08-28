@@ -16,3 +16,10 @@ output "provides" {
   }
 }
 
+output "offers" {
+  description = "Map of all the juju offers created by this module"
+  value = {
+    database = juju_offer.mysql_database_offer.url
+  }
+}
+
