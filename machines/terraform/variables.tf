@@ -124,9 +124,17 @@ variable "s3_integrator" {
 }
 
 variable "s3_integrator_credentials" {
-  description = "Defines the S3 integrator application credentials"
+  description = "Defines the S3 integrator application credentials. Accepts both ephemeral and non-ephemeral values."
   type = object({
     access_key = optional(string, "")
     secret_key = optional(string, "")
   })
+  sensitive = true
+  ephemeral = true
+}
+
+variable "s3_integrator_credentials_version" {
+  description = "Version of the S3 integrator write-only secret. Bump this value to trigger a re-apply of the credentials (e.g. after rotating them)."
+  type        = number
+  default     = 1
 }
