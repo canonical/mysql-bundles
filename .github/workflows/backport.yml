@@ -23,7 +23,6 @@ name: AI Backport Bot
 # Without it bpilot falls back to mechanical cherry-pick only.
 
 on:
-  push:
   issue_comment:
     types: [created]
   workflow_dispatch:
