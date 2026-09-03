@@ -48,21 +48,21 @@ jobs:
       issues: write        # post feedback comments (only for issue_comment runs)
 
     steps:
-#      - name: Authorize actor
-#        if: github.event_name == 'issue_comment'
-#        env:
-#          COMMENT_ASSOC: ${{ github.event.comment.author_association }}
-#        run: |
-#          ALLOWED="OWNER MEMBER COLLABORATOR"
-#          OK=0
-#          for a in $ALLOWED; do
-#            if [ "$COMMENT_ASSOC" == "$a" ]; then OK=1; fi
-#          done
-#          if [ "$OK" == "0" ]; then
-#            echo "::error::Actor not authorized (association: $COMMENT_ASSOC). Requires one of: $ALLOWED"
-#            exit 1
-#          fi
-#          echo "Authorized: $COMMENT_ASSOC"
+      - name: Authorize actor
+        if: github.event_name == 'issue_comment'
+        env:
+          COMMENT_ASSOC: ${{ github.event.comment.author_association }}
+        run: |
+          ALLOWED="OWNER MEMBER COLLABORATOR"
+          OK=0
+          for a in $ALLOWED; do
+            if [ "$COMMENT_ASSOC" == "$a" ]; then OK=1; fi
+          done
+          if [ "$OK" == "0" ]; then
+            echo "::error::Actor not authorized (association: $COMMENT_ASSOC). Requires one of: $ALLOWED"
+            exit 1
+          fi
+          echo "Authorized: $COMMENT_ASSOC"
 
       # Note: workflow_dispatch runs skip the explicit authorization step above.
       # GitHub already enforces that only users with write access can trigger
@@ -74,6 +74,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install project-specific CI deps
+        # Mirrors the setup in .github/workflows/ci.yaml. These tools are
+        # required by the verification checks that bpilot runs during port.
+        run: |
+          sudo snap install terraform --classic
+          pipx install tox
+          pipx install poetry
 
       - name: Configure git identity
         run: |
@@ -337,6 +345,14 @@ jobs:
               open('.bpilot/session.json', 'w').write(m.group(1))
           "
           test -f .bpilot/session.json || { echo "::error::session.json missing after restore"; exit 1; }
+
+      - name: Install project-specific CI deps
+        # Mirrors the setup in .github/workflows/ci.yaml. These tools are
+        # required by the verification checks that bpilot runs during finalize.
+        run: |
+          sudo snap install terraform --classic
+          pipx install tox
+          pipx install poetry
 
       - name: Configure git identity
         run: |
