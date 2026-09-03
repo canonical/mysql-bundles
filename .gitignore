@@ -9,3 +9,6 @@
 
 build/
 venv/
+
+# bpilot session state
+.bpilot/
