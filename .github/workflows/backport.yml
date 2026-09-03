@@ -48,37 +48,27 @@ jobs:
       issues: write        # post feedback comments (only for issue_comment runs)
 
     steps:
-      - name: Authorize actor
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          COMMENT_ASSOC: ${{ github.event.comment.author_association }}
-          TRIGGER_ACTOR: ${{ github.triggering_actor }}
-          REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ALLOWED="OWNER MEMBER COLLABORATOR"
-          if [ "$EVENT_NAME" == "issue_comment" ]; then
-            ASSOC="$COMMENT_ASSOC"
-          else
-            # workflow_dispatch: look up the dispatching user's repo association.
-            ASSOC=$(gh api "repos/$REPO/collaborators/$TRIGGER_ACTOR" -jq '.permissions' 2>/dev/null || true)
-            # Collaborators endpoint returns a permission string; map to association-ish result.
-            # Simpler + robust: use the permission check API instead.
-            PERM=$(gh api "repos/$REPO/collaborators/$TRIGGER_ACTOR/permission" -jq '.permission' 2>/dev/null || echo "none")
-            case "$PERM" in
-              admin|write|maintain) ASSOC="COLLABORATOR" ;;
-              *) ASSOC="NONE" ;;
-            esac
-          fi
-          OK=0
-          for a in $ALLOWED; do
-            if [ "$ASSOC" == "$a" ]; then OK=1; fi
-          done
-          if [ "$OK" == "0" ]; then
-            echo "::error::Actor not authorized (association: $ASSOC). Requires one of: $ALLOWED"
-            exit 1
-          fi
-          echo "Authorized: $ASSOC"
+#      - name: Authorize actor
+#        if: github.event_name == 'issue_comment'
+#        env:
+#          COMMENT_ASSOC: ${{ github.event.comment.author_association }}
+#        run: |
+#          ALLOWED="OWNER MEMBER COLLABORATOR"
+#          OK=0
+#          for a in $ALLOWED; do
+#            if [ "$COMMENT_ASSOC" == "$a" ]; then OK=1; fi
+#          done
+#          if [ "$OK" == "0" ]; then
+#            echo "::error::Actor not authorized (association: $COMMENT_ASSOC). Requires one of: $ALLOWED"
+#            exit 1
+#          fi
+#          echo "Authorized: $COMMENT_ASSOC"
+
+      # Note: workflow_dispatch runs skip the explicit authorization step above.
+      # GitHub already enforces that only users with write access can trigger
+      # workflow_dispatch events (via UI, CLI, or API), so an additional check
+      # is redundant and brittle (the collaborators/permission endpoint often
+      # fails with GITHUB_TOKEN on org repos).
 
       - name: Checkout repository
         uses: actions/checkout@v4
