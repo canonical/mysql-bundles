@@ -36,7 +36,6 @@ SCENARIOS = [
             "mysql-router-k8s",
             "s3-integrator",
         ],
-        offers={"mysql-database-offer": "mysql-router-k8s"},
     ),
     Scenario(
         name="optional_router",

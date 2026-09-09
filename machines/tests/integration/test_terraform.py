@@ -38,7 +38,6 @@ SCENARIOS = [
         blocked_apps=[
             "s3-integrator",
         ],
-        offers={"mysql-database-offer": "mysql-router"},
     ),
     Scenario(
         name="optional_router",
