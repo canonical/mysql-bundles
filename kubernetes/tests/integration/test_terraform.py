@@ -14,6 +14,7 @@ from .helpers import (
     TF_BINARY,
     Scenario,
     _apps_match,
+    _offers_match,
     _statuses_match,
     clean_terraform_state,
     get_common_vars,
@@ -48,6 +49,7 @@ SCENARIOS = [
         absent_apps=[
             "mysql-router-k8s",
         ],
+        offers={"mysql-database-offer": "mysql-k8s"},
     ),
 ]
 
@@ -78,6 +80,8 @@ def test_terraform(juju: jubilant.Juju, scenario: Scenario) -> None:
     terraform_apply({**get_common_vars(juju), **scenario.vars})
 
     juju.wait(
-        lambda status: _apps_match(status, scenario) and _statuses_match(status, scenario),
+        lambda status: _apps_match(status, scenario)
+        and _statuses_match(status, scenario)
+        and _offers_match(status, scenario),
         error=jubilant.any_error,
     )
